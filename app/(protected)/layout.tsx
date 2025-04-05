@@ -1,4 +1,5 @@
 import { redirect } from "next/navigation";
+import { createUserIfNotExists } from "@/actions/user";
 import { auth } from "@/auth";
 
 import { NavBar } from "@/components/Nav/NavBar";
@@ -9,6 +10,8 @@ const ProtectedLayout = async ({ children }) => {
   if (!session) {
     redirect("/login");
   }
+
+  await createUserIfNotExists(session?.user);
 
   return (
     <div>

@@ -3,18 +3,21 @@
 import { googleLogin } from "@/actions/login";
 
 import { Button } from "@/components/ui/button";
+import { ThemeToggler } from "@/components/ThemeToggler/ThemeToggler";
 
 export default function LoginPage() {
   return (
-    <div className="flex h-screen w-full flex-col items-center justify-center bg-gray-950 text-white">
+    <div className="flex h-screen w-full flex-col items-center justify-center bg-background text-white">
       <div className="mb-8">
         <BasketballLogo />
       </div>
       <h1 className="mb-2 text-4xl font-bold text-orange-500">
         Welcome Back 老哥们!
       </h1>
-      <h2>猜就完事儿了！</h2>
-      <h2 className="mb-6 text-xl text-gray-300">Login with google</h2>
+      <h2 className="text-black dark:text-white">猜就完事儿了！</h2>
+      <h2 className="mb-6 text-xl text-black text-gray-300 dark:text-white">
+        Login with google
+      </h2>
       <Button
         variant="outline"
         size="lg"
@@ -27,6 +30,7 @@ export default function LoginPage() {
         <GoogleIcon />
         Google
       </Button>
+      <ThemeToggler />
     </div>
   );
 }

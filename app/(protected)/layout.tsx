@@ -5,7 +5,7 @@ import { NavBar } from "@/components/Nav/NavBar";
 
 const ProtectedLayout = async ({ children }) => {
   const session = await auth();
-  console.log(session);
+  // console.log(session);
   if (!session) {
     redirect("/login");
   }

@@ -40,8 +40,10 @@ export const GameCard = ({ game, guess, onGuess }: GameCardProps) => {
           <button
             key={team}
             className={cn(
-              "rounded border px-4 py-2 text-sm sm:text-base",
-              guess === team ? "bg-primary text-white" : "hover:bg-muted",
+              "rounded border px-4 py-2 text-sm text-black dark:text-white sm:text-base",
+              guess === team
+                ? "bg-primary text-white dark:text-black"
+                : "hover:bg-muted",
             )}
             disabled={hasStarted}
             onClick={() => onGuess(game.id, team)}

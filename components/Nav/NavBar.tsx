@@ -37,6 +37,13 @@ export const NavBar = ({ session }) => {
           <Link href="/leaderboard" className="hover:underline">
             Leaderboard
           </Link>
+          <Link
+            href="/rules"
+            className="block text-sm"
+            onClick={() => setMobileOpen(false)}
+          >
+            Rules
+          </Link>
         </nav>
 
         <div className="flex items-center gap-2">
@@ -102,6 +109,13 @@ export const NavBar = ({ session }) => {
             onClick={() => setMobileOpen(false)}
           >
             Leaderboard
+          </Link>
+          <Link
+            href="/rules"
+            className="block text-sm"
+            onClick={() => setMobileOpen(false)}
+          >
+            Rules
           </Link>
         </nav>
       )}

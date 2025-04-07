@@ -9,10 +9,9 @@ export default async function LeaderboardPage() {
 
       <ul className="space-y-4">
         {data.map((user, idx) => {
-          console.log(user.image);
           return (
             <li
-              key={user.userId}
+              key={`${user.userId}-${idx}`}
               className="flex w-auto items-center justify-between rounded border bg-card p-4 shadow"
             >
               <div className="flex items-center gap-4">

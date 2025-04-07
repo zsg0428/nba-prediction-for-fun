@@ -2,10 +2,23 @@
 
 import { api } from "@/lib/nbaApi";
 
+// https://docs.balldontlie.io/?javascript#get-all-games   API doc
 export const fetchGames = async () => {
-  const games = await api.nba.getGames({
-    postseason: true,
-    seasons: [2023],
+  const allGames = await api.nba.getGames({
+    // postseason: true,
+    seasons: [2024],
+    per_page: 100,
+    start_date: "2025-04-07",
   });
-  console.log(games);
+  return allGames;
+};
+
+export const fetchTodayGames = async (date) => {
+  const todaysGames = await api.nba.getGames({
+    seasons: [2024],
+    per_page: 20,
+    start_date: date,
+    end_date: date,
+  });
+  return todaysGames;
 };

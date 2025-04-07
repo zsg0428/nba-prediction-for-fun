@@ -24,6 +24,8 @@ export default function PredictionsDashboard({ todaysGames, allGames }) {
   const allGamesData = allGames.data;
   const allGamesMeta = allGames.meta;
 
+  console.log(allGamesData);
+
   const [guesses, setGuesses] = useState<Record<string, string>>({});
 
   const handleGuess = (gameId: string, team: string) => {

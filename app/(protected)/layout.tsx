@@ -1,4 +1,5 @@
 import { redirect } from "next/navigation";
+import { fetchGames } from "@/actions/games";
 import { createUserIfNotExists } from "@/actions/user";
 import { auth } from "@/auth";
 
@@ -13,6 +14,7 @@ const ProtectedLayout = async ({ children }) => {
 
   await createUserIfNotExists(session?.user);
 
+  await fetchGames();
   return (
     <div>
       <NavBar session={session} />

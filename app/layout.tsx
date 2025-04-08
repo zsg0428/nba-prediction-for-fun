@@ -2,7 +2,9 @@ import type { Metadata } from "next";
 
 import "@/styles/globals.css";
 
+import { getCurrentUser } from "@/actions/user";
 import { fontGeist, fontHeading, fontSans, fontUrban } from "@/assets/fonts";
+import { UserProvider } from "@/context/UserContext";
 import { ThemeProvider } from "next-themes";
 
 import { cn } from "@/lib/utils";
@@ -13,11 +15,12 @@ export const metadata: Metadata = {
   description: "Let's guess!!",
 };
 
-export default function RootLayout({
+export default async function RootLayout({
   children,
 }: Readonly<{
   children: React.ReactNode;
 }>) {
+  const user = await getCurrentUser();
   return (
     <html lang="en">
       <head>
@@ -41,8 +44,10 @@ export default function RootLayout({
           enableSystem
           disableTransitionOnChange
         >
-          {children}
-          <Toaster richColors closeButton />
+          <UserProvider user={user}>
+            {children}
+            <Toaster richColors closeButton />
+          </UserProvider>
         </ThemeProvider>
       </body>
     </html>

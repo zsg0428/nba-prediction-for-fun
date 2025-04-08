@@ -47,7 +47,7 @@ export default function AllGamesSection({
 
   return (
     <section className="space-y-6">
-      <h2 className="mb-4 text-2xl font-semibold">All Games</h2>
+      <h2 className="mb-4 text-center text-2xl font-semibold">All Games</h2>
 
       {dateKeys.slice(0, visibleDates).map((date) => (
         <div key={date} className="space-y-3">

@@ -24,8 +24,8 @@ model User {
 
 model Round {
   id    String @id @default(cuid())
-  name  String // e.g., "First Round", "Semifinal", "Final"
-  point Int
+  name  String @unique // e.g., "First Round", "Semifinal", "Final"
+  point Float
   games Game[]
 }
 

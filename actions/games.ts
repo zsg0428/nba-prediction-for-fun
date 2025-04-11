@@ -14,6 +14,7 @@ export const fetchGames = async () => {
     per_page: 100,
     start_date: today,
   });
+  console.log(allGames);
   return allGames;
 };
 

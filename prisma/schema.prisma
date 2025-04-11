@@ -36,8 +36,8 @@ model Game {
   awayTeam    String
   startTime   DateTime
   winnerTeam  String? // 比赛结果（可空）
-  round       Round        @relation(fields: [roundId], references: [id])
-  roundId     String
+  round       Round?       @relation(fields: [roundId], references: [id])
+  roundId     String?
   predictions Prediction[]
   createdAt   DateTime     @default(now())
 }

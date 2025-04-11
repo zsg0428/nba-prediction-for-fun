@@ -67,6 +67,7 @@ export const AssignRoundAndPoints = ({ gameId, onSubmit }: AssignProps) => {
         onChange={(e) => setPoint(Number(e.target.value))}
         min={1}
         className="w-24"
+        disabled
       />
 
       <Button size="sm" onClick={handleSubmit}>

@@ -14,7 +14,7 @@ export const fetchGames = async () => {
     per_page: 100,
     start_date: today,
   });
-  console.log(allGames);
+  // console.log(allGames);
   return allGames;
 };
 
@@ -46,6 +46,30 @@ export const assignGameToRound = async (
       },
       data: {
         roundId: round.id,
+      },
+    });
+  } catch (e) {
+    console.error("updating game round failed", e);
+    throw new Error("updating game round failed");
+  }
+};
+
+export const removeRoundFromGame = async (gameApiId: number | string) => {
+  const game = await prisma.game.findUnique({
+    where: {
+      apiGameId: gameApiId,
+    },
+  });
+
+  if (!game) throw new Error(`game ${gameApiId} is not found`);
+
+  try {
+    await prisma.game.update({
+      where: {
+        apiGameId: gameApiId,
+      },
+      data: {
+        roundId: null,
       },
     });
   } catch (e) {

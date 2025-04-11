@@ -6,6 +6,7 @@ import { format } from "date-fns";
 
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
+import { Separator } from "@/components/ui/separator";
 import AllGamesSection from "@/components/Games/AllGamesSection";
 import TodaysGamesSection from "@/components/Games/TodaysGameSection";
 import { PredictionRules } from "@/components/Predicitions/PredictionRules";
@@ -24,7 +25,7 @@ export default function PredictionsDashboard({ todaysGames, allGames }) {
   const allGamesData = allGames.data;
   const allGamesMeta = allGames.meta;
 
-  console.log(allGamesData);
+  // console.log(allGamesData);
 
   const [guesses, setGuesses] = useState<Record<string, string>>({});
 
@@ -48,7 +49,7 @@ export default function PredictionsDashboard({ todaysGames, allGames }) {
         guesses={guesses}
         onGuess={handleGuess}
       />
-
+      <Separator />
       {/* All Games */}
       <AllGamesSection
         games={allGamesData}

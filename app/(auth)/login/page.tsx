@@ -15,13 +15,13 @@ export default function LoginPage() {
         Welcome Back 老哥们!
       </h1>
       <h2 className="text-black dark:text-white">猜就完事儿了！</h2>
-      <h2 className="mb-6 text-xl text-black text-gray-300 dark:text-white">
+      <h2 className="mb-6 text-xl text-black dark:text-white">
         Login with google
       </h2>
       <Button
         variant="outline"
         size="lg"
-        className="flex cursor-pointer items-center gap-2 bg-gray-800 px-6 py-6 text-lg hover:bg-gray-700"
+        className="mb-4 flex cursor-pointer items-center gap-2 bg-gray-800 px-6 py-6 text-lg hover:bg-gray-700"
         onClick={async () => {
           await googleLogin();
           console.log("logged in successfully");

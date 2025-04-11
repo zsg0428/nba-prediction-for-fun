@@ -1,9 +1,12 @@
 "use client";
 
+import { assignGameToRound } from "@/actions/games";
 import { format } from "date-fns";
+import { toast } from "sonner";
 
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
+import { AssignRoundAndPoints } from "@/components/Games/AssignRoundAndPoints";
 
 type Game = {
   id: number | string;
@@ -19,9 +22,20 @@ type Props = {
 };
 
 export default function TodaysGamesSection({ games, guesses, onGuess }: Props) {
+  const handleAssignRound = async (gameId: string, roundName: string) => {
+    try {
+      await assignGameToRound(gameId, roundName);
+      toast.success("Assign points successful");
+    } catch (e) {
+      toast.error("assign round and points failed");
+    }
+  };
+
   return (
     <section>
-      <h2 className="mb-4 text-2xl font-semibold">Today's Games</h2>
+      <h2 className="mb-6 text-center text-2xl font-semibold">
+        Today's Games ({format(new Date(), "yyyy-MM-dd")})
+      </h2>
       <div className="grid gap-4 sm:grid-cols-2">
         {games.length > 0 ? (
           games.map((game) => (
@@ -47,6 +61,10 @@ export default function TodaysGamesSection({ games, guesses, onGuess }: Props) {
                   ))}
                 </div>
               </CardContent>
+              <AssignRoundAndPoints
+                gameId={game.id}
+                onSubmit={handleAssignRound}
+              />
             </Card>
           ))
         ) : (

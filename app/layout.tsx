@@ -43,6 +43,7 @@ export default async function RootLayout({
           defaultTheme="system"
           enableSystem
           disableTransitionOnChange
+          storageKey="theme-nba-app"
         >
           <UserProvider user={user}>
             {children}

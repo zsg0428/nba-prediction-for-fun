@@ -1,10 +1,13 @@
 "use client";
 
 import { useState } from "react";
+import { assignGameToRound } from "@/actions/games";
 import { format } from "date-fns";
+import { toast } from "sonner";
 
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
+import { AssignRoundAndPoints } from "@/components/Games/AssignRoundAndPoints";
 
 type Game = {
   id: number | string;
@@ -45,6 +48,15 @@ export default function AllGamesSection({
   const grouped = groupGamesByDate(games);
   const dateKeys = Object.keys(grouped).sort(); // ascending order
 
+  const handleAssignRound = async (gameId: string, roundName: string) => {
+    try {
+      await assignGameToRound(gameId, roundName);
+      toast.success("Assign points successful");
+    } catch (e) {
+      toast.error("assign round and points failed");
+    }
+  };
+
   return (
     <section className="space-y-6">
       <h2 className="mb-4 text-center text-2xl font-semibold">All Games</h2>
@@ -84,6 +96,10 @@ export default function AllGamesSection({
                       : ""}
                   </div>
                 </CardContent>
+                <AssignRoundAndPoints
+                  gameId={game.id}
+                  onSubmit={handleAssignRound}
+                />
               </Card>
             ))}
           </div>

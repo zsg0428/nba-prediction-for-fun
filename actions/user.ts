@@ -1,3 +1,5 @@
+"use server";
+
 import { auth } from "@/auth";
 
 import { prisma } from "@/lib/db";
@@ -39,3 +41,15 @@ export const getCurrentUser = async () => {
 
   return user;
 };
+
+export const getCurrentUserId = async () => {
+  const user = await getCurrentUser()
+
+  const userId = user?.id
+    
+  if (!userId) {
+    throw new Error(`Invalid user: ${user}`)
+  }
+
+  return userId
+}

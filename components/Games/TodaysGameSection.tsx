@@ -1,6 +1,7 @@
 "use client";
 
 import { assignGameToRound } from "@/actions/games";
+import { CalendarCheck } from "lucide-react";
 import { format } from "date-fns";
 import { toast } from "sonner";
 
@@ -44,8 +45,11 @@ export default function TodaysGamesSection({ games, guesses, onGuess }: Props) {
           games.map((game) => (
             <Card key={game.id}>
               <CardContent className="space-y-3 p-4">
+                <div>
+                  {isNaN(new Date(game.status).getTime()) ? `${game.status === 'Final' ? '✅' : '🏀' } ${game.status}` : '🗓️ Scheduled'}
+                </div>
                 <div className="text-lg font-semibold">
-                  {game.home_team.name} vs {game.visitor_team.name} - {isNaN(new Date(game.status).getTime()) ? game.status : 'Not Started'}
+                  {game.home_team.name} vs {game.visitor_team.name}
                 </div>
                 <div>
                   {game.home_team_score} : {game.visitor_team_score}

@@ -11,8 +11,11 @@ import { AssignRoundAndPoints } from "@/components/Games/AssignRoundAndPoints";
 type Game = {
   id: number | string;
   datetime: string;
+  status: string;
   home_team: { name: string };
+  home_team_score: number;
   visitor_team: { name: string };
+  visitor_team_score: number;
 };
 
 type Props = {
@@ -41,8 +44,14 @@ export default function TodaysGamesSection({ games, guesses, onGuess }: Props) {
           games.map((game) => (
             <Card key={game.id}>
               <CardContent className="space-y-3 p-4">
+                <div>
+                  {isNaN(new Date(game.status).getTime()) ? `${game.status === 'Final' ? '✅' : '🏀' } ${game.status}` : '🗓️ Scheduled'}
+                </div>
                 <div className="text-lg font-semibold">
                   {game.home_team.name} vs {game.visitor_team.name}
+                </div>
+                <div className="text-lg font-semibold">
+                  {game.home_team_score} : {game.visitor_team_score}
                 </div>
                 <div className="text-sm text-muted-foreground">
                   {format(new Date(game.datetime), "PPpp")}

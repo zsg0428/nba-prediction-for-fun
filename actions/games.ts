@@ -42,7 +42,7 @@ export const assignGameToRound = async (
   try {
     await prisma.game.update({
       where: {
-        apiGameId: gameApiId,
+        apiGameId: parseInt(gameApiId),
       },
       data: {
         roundId: round.id,
@@ -54,19 +54,13 @@ export const assignGameToRound = async (
   }
 };
 
-export const removeRoundFromGame = async (gameApiId: number | string) => {
-  const game = await prisma.game.findUnique({
-    where: {
-      apiGameId: gameApiId,
-    },
-  });
-
-  if (!game) throw new Error(`game ${gameApiId} is not found`);
+export const removeRoundFromGame = async (gameApiId: string) => {
+  const game = await fetchSingleGame(gameApiId)
 
   try {
     await prisma.game.update({
       where: {
-        apiGameId: gameApiId,
+        apiGameId: parseInt(gameApiId),
       },
       data: {
         roundId: null,
@@ -77,3 +71,20 @@ export const removeRoundFromGame = async (gameApiId: number | string) => {
     throw new Error("updating game round failed");
   }
 };
+
+export const fetchSingleGame = async (gameApiId: string) => {
+  const game = await prisma.game.findUnique({
+    where: {
+      apiGameId: parseInt(gameApiId),
+    },
+  });
+
+  if (!game) throw new Error(`game ${gameApiId} is not found`);
+
+  return game
+}
+
+export const fetchSingleGameIdAndStarted = async (gameApiId: string) => {
+  const game = await fetchSingleGame(gameApiId)
+  return { gameId: game.id, started: Date.now() > game.startTime.getTime() }
+}

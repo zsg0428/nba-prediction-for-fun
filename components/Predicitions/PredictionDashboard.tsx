@@ -2,14 +2,14 @@
 "use client";
 
 import { useState } from "react";
-import { format } from "date-fns";
 
-import { Button } from "@/components/ui/button";
-import { Card, CardContent } from "@/components/ui/card";
 import { Separator } from "@/components/ui/separator";
 import AllGamesSection from "@/components/Games/AllGamesSection";
 import TodaysGamesSection from "@/components/Games/TodaysGameSection";
-import { PredictionRules } from "@/components/Predicitions/PredictionRules";
+import { getCurrentUserId } from "@/actions/user";
+import { upsertPrediction } from "@/actions/prediction"
+import { fetchSingleGameIdAndStarted } from "@/actions/games";
+import { toast } from "sonner";
 
 type Game = {
   id: string;
@@ -29,8 +29,18 @@ export default function PredictionsDashboard({ todaysGames, allGames }) {
 
   const [guesses, setGuesses] = useState<Record<string, string>>({});
 
-  const handleGuess = (gameId: string, team: string) => {
-    setGuesses((prev) => ({ ...prev, [gameId]: team }));
+  const handleGuess = async (gameApiId: string, team: string) => {
+    setGuesses((prev) => ({ ...prev, [gameApiId]: team }));
+
+    const userId = await getCurrentUserId()
+    const {gameId, started} = await fetchSingleGameIdAndStarted(gameApiId)
+
+    if (!started) {
+      await upsertPrediction({userId, gameId, predictedTeam: team})
+      toast.success(`Updated prediction to ${team}, good luck!`);
+    } else {
+      toast.error("Game has started, you cannot update prediction anymore!");
+    }
   };
 
   return (

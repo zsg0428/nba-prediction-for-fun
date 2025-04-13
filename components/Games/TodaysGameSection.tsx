@@ -51,7 +51,7 @@ export default function TodaysGamesSection({ games, guesses, onGuess }: Props) {
                 <div className="text-lg font-semibold">
                   {game.home_team.name} vs {game.visitor_team.name}
                 </div>
-                <div>
+                <div className="text-lg font-semibold">
                   {game.home_team_score} : {game.visitor_team_score}
                 </div>
                 <div className="text-sm text-muted-foreground">

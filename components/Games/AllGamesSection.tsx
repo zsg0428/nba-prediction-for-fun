@@ -83,7 +83,7 @@ export default function AllGamesSection({
                               key={team}
                               size="sm"
                               variant={
-                                guesses[game.id] === team
+                                guesses?.[game.id] === team
                                   ? ("default" as const)
                                   : ("outline" as const)
                               }

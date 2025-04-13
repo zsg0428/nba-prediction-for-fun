@@ -15,8 +15,11 @@ type Game = {
   id: number | string;
   date: string; // e.g. "2025-04-07"
   datetime: string; // full ISO datetime string
+  status: string;
   home_team: { name: string };
+  home_team_score: number;
   visitor_team: { name: string };
+  visitor_team_score: number;
 };
 
 type PredictionsDashboardProps = {

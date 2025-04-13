@@ -18,7 +18,7 @@ export const fetchGames = async () => {
   return allGames;
 };
 
-export const fetchTodayGames = async (date) => {
+export const fetchTodayGames = async (date: string) => {
   const todaysGames = await api.nba.getGames({
     seasons: [2024],
     per_page: 20,
@@ -55,7 +55,7 @@ export const assignGameToRound = async (
 };
 
 export const removeRoundFromGame = async (gameApiId: string) => {
-  const game = await fetchSingleGame(gameApiId)
+  const game = await fetchSingleGameFromDb(gameApiId)
 
   try {
     await prisma.game.update({
@@ -72,7 +72,7 @@ export const removeRoundFromGame = async (gameApiId: string) => {
   }
 };
 
-export const fetchSingleGame = async (gameApiId: string) => {
+export const fetchSingleGameFromDb = async (gameApiId: string) => {
   const game = await prisma.game.findUnique({
     where: {
       apiGameId: parseInt(gameApiId),
@@ -84,7 +84,26 @@ export const fetchSingleGame = async (gameApiId: string) => {
   return game
 }
 
-export const fetchSingleGameIdAndStarted = async (gameApiId: string) => {
-  const game = await fetchSingleGame(gameApiId)
+export const fetchSingleGameIdAndIfStarted = async (gameApiId: string) => {
+  const game = await fetchSingleGameFromDb(gameApiId)
   return { gameId: game.id, started: Date.now() > game.startTime.getTime() }
+}
+
+export const updateGameWinnerTeam = async (gameId: string, winnerTeam: string) => {
+  await prisma.game.update({
+    where: {
+      id: gameId,
+    },
+    data: {
+      winnerTeam: winnerTeam,
+    }
+  })
+}
+
+export const fetchAllPendingGamesFromDb = async () => {
+  return await prisma.game.findMany({
+    where: {
+      winnerTeam: null
+    }
+  })
 }

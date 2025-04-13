@@ -8,17 +8,29 @@ import AllGamesSection from "@/components/Games/AllGamesSection";
 import TodaysGamesSection from "@/components/Games/TodaysGameSection";
 import { getCurrentUserId } from "@/actions/user";
 import { upsertPrediction } from "@/actions/prediction"
-import { fetchSingleGameIdAndStarted } from "@/actions/games";
+import { fetchSingleGameIdAndIfStarted } from "@/actions/games";
 import { toast } from "sonner";
 
 type Game = {
-  id: string;
-  home: string;
-  away: string;
-  startTime: string;
+  id: number | string;
+  date: string; // e.g. "2025-04-07"
+  datetime: string; // full ISO datetime string
+  home_team: { name: string };
+  visitor_team: { name: string };
 };
 
-export default function PredictionsDashboard({ todaysGames, allGames }) {
+type PredictionsDashboardProps = {
+  todaysGames: {
+    data: Game[];
+    meta: Record<string, any>;
+  };
+  allGames: {
+    data: Game[];
+    meta: Record<string, any>;
+  };
+};
+
+export default function PredictionsDashboard({ todaysGames, allGames }: PredictionsDashboardProps) {
   const todayGamesData = todaysGames.data;
   const todayGamesMeta = todaysGames.meta;
 
@@ -33,7 +45,7 @@ export default function PredictionsDashboard({ todaysGames, allGames }) {
     setGuesses((prev) => ({ ...prev, [gameApiId]: team }));
 
     const userId = await getCurrentUserId()
-    const {gameId, started} = await fetchSingleGameIdAndStarted(gameApiId)
+    const {gameId, started} = await fetchSingleGameIdAndIfStarted(gameApiId)
 
     if (!started) {
       await upsertPrediction({userId, gameId, predictedTeam: team})

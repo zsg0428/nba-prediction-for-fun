@@ -67,14 +67,14 @@ export default function PredictionsDashboard({
 
       {/* Today’s Games */}
       <TodaysGamesSection
-        games={todaysGames}
+        games={todaysGames.data}
         guesses={guesses}
         onGuess={handleGuess}
       />
       <Separator />
       {/* All Games */}
       <AllGamesSection
-        games={allGames}
+        games={allGames.data}
         guesses={guesses}
         onGuess={handleGuess}
         isPrediction={true}

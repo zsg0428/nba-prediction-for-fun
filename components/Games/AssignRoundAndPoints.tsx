@@ -1,6 +1,7 @@
 "use client";
 
 import { useState } from "react";
+import { useRouter } from "next/navigation";
 import { removeRoundFromGame } from "@/actions/games";
 import { useUser } from "@/context/UserContext";
 import { Role } from "@prisma/client";
@@ -26,7 +27,7 @@ const ROUND_OPTIONS = [
   { label: "Finals", value: "Finals", point: 5 },
 ];
 type AssignProps = {
-  gameId: string | number;
+  gameId: string;
   onSubmit: (gameId: string | number, round: string) => void;
 };
 
@@ -36,6 +37,7 @@ export const AssignRoundAndPoints = ({ gameId, onSubmit }: AssignProps) => {
   const [point, setPoint] = useState(ROUND_OPTIONS[0].point);
   const [loading, setLoading] = useState<boolean>(false);
 
+  const router = useRouter();
   if (user?.role !== "ADMIN") return null;
 
   const handleSubmit = () => {
@@ -46,6 +48,7 @@ export const AssignRoundAndPoints = ({ gameId, onSubmit }: AssignProps) => {
       console.error("assigning failed");
     } finally {
       setLoading(false);
+      router.refresh();
     }
   };
 
@@ -56,6 +59,8 @@ export const AssignRoundAndPoints = ({ gameId, onSubmit }: AssignProps) => {
     } catch (e) {
       console.error("failed to remove this game rounrd");
       toast.error("Failed to remove this game");
+    } finally {
+      router.refresh();
     }
   };
 

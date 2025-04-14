@@ -55,7 +55,7 @@ export const assignGameToRound = async (
 };
 
 export const removeRoundFromGame = async (gameApiId: string) => {
-  const game = await fetchSingleGameFromDb(gameApiId)
+  const game = await fetchSingleGameFromDb(gameApiId);
 
   try {
     await prisma.game.update({
@@ -77,33 +77,46 @@ export const fetchSingleGameFromDb = async (gameApiId: string) => {
     where: {
       apiGameId: parseInt(gameApiId),
     },
+    include: {
+      round: true,
+    },
   });
 
   if (!game) throw new Error(`game ${gameApiId} is not found`);
 
-  return game
-}
+  return game;
+};
 
 export const fetchSingleGameIdAndIfStarted = async (gameApiId: string) => {
-  const game = await fetchSingleGameFromDb(gameApiId)
-  return { gameId: game.id, started: Date.now() > game.startTime.getTime() }
-}
+  const game = await fetchSingleGameFromDb(gameApiId);
+  return { gameId: game.id, started: Date.now() > game.startTime.getTime() };
+};
 
-export const updateGameWinnerTeam = async (gameId: string, winnerTeam: string) => {
+export const updateGameWinnerTeam = async (
+  gameId: string,
+  winnerTeam: string,
+) => {
   await prisma.game.update({
     where: {
       id: gameId,
     },
     data: {
       winnerTeam: winnerTeam,
-    }
-  })
-}
+    },
+  });
+};
 
 export const fetchAllPendingGamesFromDb = async () => {
   return await prisma.game.findMany({
     where: {
-      winnerTeam: null
-    }
-  })
-}
+      winnerTeam: null,
+    },
+  });
+};
+
+export const fetchAllGamesFromDb = async () => {
+  const dbGames = await prisma.game.findMany({
+    include: { round: true },
+  });
+  return dbGames;
+};

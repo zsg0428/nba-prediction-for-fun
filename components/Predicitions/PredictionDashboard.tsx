@@ -2,14 +2,14 @@
 "use client";
 
 import { useState } from "react";
+import { fetchSingleGameIdAndIfStarted } from "@/actions/games";
+import { upsertPrediction } from "@/actions/prediction";
+import { getCurrentUserId } from "@/actions/user";
+import { toast } from "sonner";
 
 import { Separator } from "@/components/ui/separator";
 import AllGamesSection from "@/components/Games/AllGamesSection";
 import TodaysGamesSection from "@/components/Games/TodaysGameSection";
-import { getCurrentUserId } from "@/actions/user";
-import { upsertPrediction } from "@/actions/prediction"
-import { fetchSingleGameIdAndIfStarted } from "@/actions/games";
-import { toast } from "sonner";
 
 type Game = {
   id: number | string;
@@ -28,18 +28,15 @@ type PredictionsDashboardProps = {
     meta: Record<string, any>;
   };
   allGames: {
-    data: Game[];
+    data;
     meta: Record<string, any>;
   };
 };
 
-export default function PredictionsDashboard({ todaysGames, allGames }: PredictionsDashboardProps) {
-  const todayGamesData = todaysGames.data;
-  const todayGamesMeta = todaysGames.meta;
-
-  const allGamesData = allGames.data;
-  const allGamesMeta = allGames.meta;
-
+export default function PredictionsDashboard({
+  todaysGames,
+  allGames,
+}: PredictionsDashboardProps) {
   // console.log(allGamesData);
 
   const [guesses, setGuesses] = useState<Record<string, string>>({});
@@ -47,11 +44,11 @@ export default function PredictionsDashboard({ todaysGames, allGames }: Predicti
   const handleGuess = async (gameApiId: string, team: string) => {
     setGuesses((prev) => ({ ...prev, [gameApiId]: team }));
 
-    const userId = await getCurrentUserId()
-    const {gameId, started} = await fetchSingleGameIdAndIfStarted(gameApiId)
+    const userId = await getCurrentUserId();
+    const { gameId, started } = await fetchSingleGameIdAndIfStarted(gameApiId);
 
     if (!started) {
-      await upsertPrediction({userId, gameId, predictedTeam: team})
+      await upsertPrediction({ userId, gameId, predictedTeam: team });
       toast.success(`Updated prediction to ${team}, good luck!`);
     } else {
       toast.error("Game has started, you cannot update prediction anymore!");
@@ -70,14 +67,14 @@ export default function PredictionsDashboard({ todaysGames, allGames }: Predicti
 
       {/* Today’s Games */}
       <TodaysGamesSection
-        games={todayGamesData}
+        games={todaysGames}
         guesses={guesses}
         onGuess={handleGuess}
       />
       <Separator />
       {/* All Games */}
       <AllGamesSection
-        games={allGamesData}
+        games={allGames}
         guesses={guesses}
         onGuess={handleGuess}
         isPrediction={true}

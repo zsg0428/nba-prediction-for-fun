@@ -1,6 +1,7 @@
 "use client";
 
 import { useState } from "react";
+import { useRouter } from "next/router";
 import { assignGameToRound } from "@/actions/games";
 import { format } from "date-fns";
 import { toast } from "sonner";
@@ -10,15 +11,16 @@ import { Card, CardContent } from "@/components/ui/card";
 import { AssignRoundAndPoints } from "@/components/Games/AssignRoundAndPoints";
 
 type Game = {
-  id: number | string;
+  id: string;
   date: string; // e.g. "2025-04-07"
   datetime: string; // full ISO datetime string
   home_team: { name: string };
   visitor_team: { name: string };
+  round: string;
 };
 
 type Props = {
-  games: Game[];
+  games;
   guesses?: Record<string, string>;
   onGuess?: (gameId: string, team: string) => void;
   isPrediction?: boolean;
@@ -35,7 +37,6 @@ export default function AllGamesSection({
   isPrediction = true,
 }: Props) {
   const [visibleDates, setVisibleDates] = useState(3); // show 3 days initially
-
   const groupGamesByDate = (games: Game[]): GroupedGames => {
     return games.reduce((groups: GroupedGames, game) => {
       const date = game.date;
@@ -94,6 +95,9 @@ export default function AllGamesSection({
                           ),
                         )
                       : ""}
+                  </div>
+                  <div className="text-sm">
+                    Round: {game.round || "Please assign a round to this game"}
                   </div>
                 </CardContent>
                 <AssignRoundAndPoints

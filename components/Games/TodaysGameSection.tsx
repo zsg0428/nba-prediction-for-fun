@@ -38,7 +38,7 @@ export default function TodaysGamesSection({ games, guesses, onGuess }: Props) {
   return (
     <section>
       <h2 className="mb-6 text-center text-2xl font-semibold">
-        Today's Games ({format(new Date(), "yyyy-MM-dd")})
+        Today&#39;s Games ({format(new Date(), "yyyy-MM-dd")})
       </h2>
       <div className="grid gap-4 sm:grid-cols-2">
         {games.length > 0 ? (

@@ -14,14 +14,11 @@
     "react/jsx-key": "off",
     "tailwindcss/no-custom-classname": "off",
     "tailwindcss/classnames-order": "error",
-    "tailwindcss/enforces-shorthand": "off",
-    "quotes": ["error", "double"]
+    "tailwindcss/enforces-shorthand": "off"
   },
   "settings": {
     "tailwindcss": {
-      "callees": [
-        "cn"
-      ],
+      "callees": ["cn"],
       "config": "tailwind.config.ts"
     },
     "next": {
@@ -30,10 +27,7 @@
   },
   "overrides": [
     {
-      "files": [
-        "*.ts",
-        "*.tsx"
-      ],
+      "files": ["*.ts", "*.tsx"],
       "parser": "@typescript-eslint/parser"
     }
   ]

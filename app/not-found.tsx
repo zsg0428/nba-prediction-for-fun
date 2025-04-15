@@ -19,8 +19,8 @@ export default function NotFound() {
         </h1>
 
         <p className="mb-8 max-w-md text-gray-400">
-          Looks like this play didn't make it to the scoreboard. The page you're
-          looking for might have been traded to another team.
+          Looks like this play didn&#39;t make it to the scoreboard. The page
+          you&#39;re looking for might have been traded to another team.
         </p>
 
         <div className="flex flex-col gap-4 sm:flex-row">

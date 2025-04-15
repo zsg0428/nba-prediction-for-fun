@@ -78,7 +78,9 @@ export default function TodaysGamesSection({ games, guesses, onGuess }: Props) {
               </CardContent>
               <AssignRoundAndPoints
                 gameId={game.id}
-                onSubmit={handleAssignRound}
+                onSubmit={(gameId, round) =>
+                  handleAssignRound(String(gameId), round)
+                }
               />
             </Card>
           ))

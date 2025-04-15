@@ -6,7 +6,7 @@ import { Button } from "@/components/ui/button";
 
 export default async function AdminPage() {
   const user = await getCurrentUser();
-  if (user.role !== Role.ADMIN) {
+  if (user?.role !== Role.ADMIN) {
     return (
       <div>
         <span>You have no access to the admin page</span>

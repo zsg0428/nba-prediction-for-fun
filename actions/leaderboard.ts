@@ -22,7 +22,7 @@ export async function getLeaderboard() {
 
   const leaderboard = users.map((user) => {
     const totalPoints = user.predictions.reduce((sum, prediction) => {
-      return sum + (prediction.game.round.point || 0);
+      return sum + (prediction?.game?.round?.point ?? 0);
     }, 0);
 
     return {

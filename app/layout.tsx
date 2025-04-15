@@ -45,7 +45,15 @@ export default async function RootLayout({
           disableTransitionOnChange
           storageKey="theme-nba-app"
         >
-          <UserProvider user={user}>
+          <UserProvider
+            user={{
+              ...user,
+              id: user?.id ?? "",
+              name: user?.name ?? "",
+              email: user?.email ?? "",
+              image: user?.image ?? "",
+            }}
+          >
             {children}
             <Toaster richColors closeButton />
           </UserProvider>

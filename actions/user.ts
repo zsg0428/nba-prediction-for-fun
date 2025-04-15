@@ -4,7 +4,7 @@ import { auth } from "@/auth";
 
 import { prisma } from "@/lib/db";
 
-interface UserData {
+export interface UserData {
   name?: string | null;
   email: string;
   image?: string | null;
@@ -43,13 +43,13 @@ export const getCurrentUser = async () => {
 };
 
 export const getCurrentUserId = async () => {
-  const user = await getCurrentUser()
+  const user = await getCurrentUser();
 
-  const userId = user?.id
-    
+  const userId = user?.id;
+
   if (!userId) {
-    throw new Error(`Invalid user: ${user}`)
+    throw new Error(`Invalid user: ${user}`);
   }
 
-  return userId
-}
+  return userId;
+};

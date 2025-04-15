@@ -14,7 +14,7 @@ import TodaysGamesSection from "@/components/Games/TodaysGameSection";
 type Game = {
   id: number | string;
   date: string; // e.g. "2025-04-07"
-  datetime: string; // full ISO datetime string
+  datetime?: string; // full ISO datetime string
   status: string;
   home_team: { name: string };
   home_team_score: number;
@@ -24,11 +24,11 @@ type Game = {
 
 type PredictionsDashboardProps = {
   todaysGames: {
-    data: Game[];
+    data: any[];
     meta: Record<string, any>;
   };
   allGames: {
-    data;
+    data: any[];
     meta: Record<string, any>;
   };
 };

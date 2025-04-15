@@ -3,6 +3,7 @@
 import { useState } from "react";
 import Link from "next/link";
 import { Menu, X } from "lucide-react";
+import { Session } from "next-auth";
 
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Button } from "@/components/ui/button";
@@ -15,7 +16,7 @@ import {
 import { SignoutButton } from "@/components/Signout/SignoutButton";
 import { ThemeToggler } from "@/components/ThemeToggler/ThemeToggler";
 
-export const NavBar = ({ session }) => {
+export const NavBar = ({ session }: { session: Session | null }) => {
   const [mobileOpen, setMobileOpen] = useState(false);
 
   return (

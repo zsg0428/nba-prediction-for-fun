@@ -3,7 +3,6 @@
 import React, { useState } from "react";
 import { Trash } from "lucide-react";
 
-import log from "@/common/logger";
 import { Button } from "@/components/ui/button";
 import {
   Dialog,

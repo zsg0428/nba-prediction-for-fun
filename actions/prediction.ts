@@ -2,6 +2,7 @@
 
 import { prisma } from "@/lib/db";
 import { api } from "@/lib/nbaApi";
+
 import { fetchAllPendingGamesFromDb, updateGameWinnerTeam } from "./games";
 
 interface GameParam {
@@ -67,42 +68,42 @@ export const upsertPrediction = async ({
   return prediction;
 };
 
-export const refreshPredictions = async() => {
-  const pendingGames = await fetchAllPendingGamesFromDb()
+export const refreshPredictions = async () => {
+  const pendingGames = await fetchAllPendingGamesFromDb();
 
   for (let pendingGame of pendingGames) {
-    const game = await api.nba.getGame(pendingGame.apiGameId)
-    if (game.data.status === 'Final') {
-      const winnerTeam = game.data.home_team_score > game.data.visitor_team_score ? game.data.home_team.name : game.data.visitor_team.name
+    const game = await api.nba.getGame(pendingGame.apiGameId);
+    if (game.data.status === "Final") {
+      const winnerTeam =
+        game.data.home_team_score > game.data.visitor_team_score
+          ? game.data.home_team.name
+          : game.data.visitor_team.name;
 
-      await updateGameWinnerTeam(pendingGame.id, winnerTeam)
-      await upsertPredictionResult(pendingGame.id, winnerTeam)
+      await updateGameWinnerTeam(pendingGame.id, winnerTeam);
+      await upsertPredictionResult(pendingGame.id, winnerTeam);
     }
   }
-}
+};
 
-const upsertPredictionResult = async(
-  gameId: string,
-  winnerTeam: string
-) => {
-  const predictions = await fetchPredictionsByGameId(gameId)
+const upsertPredictionResult = async (gameId: string, winnerTeam: string) => {
+  const predictions = await fetchPredictionsByGameId(gameId);
 
   for (let prediction of predictions) {
     await prisma.prediction.update({
       where: {
-        id: prediction.id
+        id: prediction.id,
       },
-      update: {
-        isCorrect: prediction.predictedTeam === winnerTeam
-      }
-    })
+      data: {
+        isCorrect: prediction.predictedTeam === winnerTeam,
+      },
+    });
   }
-}
+};
 
-const fetchPredictionsByGameId = async(gameId: string) => {
+const fetchPredictionsByGameId = async (gameId: string) => {
   return await prisma.prediction.findMany({
     where: {
       gameId: gameId,
-    }
-  })
-}
+    },
+  });
+};

@@ -13,21 +13,21 @@ import { AssignRoundAndPoints } from "@/components/Games/AssignRoundAndPoints";
 type Game = {
   id: string;
   date: string; // e.g. "2025-04-07"
-  datetime: string; // full ISO datetime string
+  datetime?: string; // full ISO datetime string
   home_team: { name: string };
   visitor_team: { name: string };
   round: string;
 };
 
 type Props = {
-  games;
+  games: any[];
   guesses?: Record<string, string>;
   onGuess?: (gameId: string, team: string) => void;
   isPrediction?: boolean;
 };
 
 type GroupedGames = {
-  [date: string]: Game[];
+  [date: string]: any[];
 };
 
 export default function AllGamesSection({
@@ -37,7 +37,7 @@ export default function AllGamesSection({
   isPrediction = true,
 }: Props) {
   const [visibleDates, setVisibleDates] = useState(3); // show 3 days initially
-  const groupGamesByDate = (games: Game[]): GroupedGames => {
+  const groupGamesByDate = (games: any[]): GroupedGames => {
     return games.reduce((groups: GroupedGames, game) => {
       const date = game.date;
       if (!groups[date]) groups[date] = [];
@@ -102,7 +102,9 @@ export default function AllGamesSection({
                 </CardContent>
                 <AssignRoundAndPoints
                   gameId={game.id}
-                  onSubmit={handleAssignRound}
+                  onSubmit={(gameId, round) =>
+                    handleAssignRound(String(gameId), round)
+                  }
                 />
               </Card>
             ))}

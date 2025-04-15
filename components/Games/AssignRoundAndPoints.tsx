@@ -28,7 +28,7 @@ const ROUND_OPTIONS = [
 ];
 type AssignProps = {
   gameId: string;
-  onSubmit: (gameId: string | number, round: string) => void;
+  onSubmit: (gameId: string | number, round: string) => Promise<void>;
 };
 
 export const AssignRoundAndPoints = ({ gameId, onSubmit }: AssignProps) => {

@@ -11,7 +11,7 @@ export default async function LeaderboardPage() {
         {data.map((user, idx) => {
           return (
             <li
-              key={`${user.userId}-${idx}`}
+              key={`${user.id}-${idx}`}
               className="flex w-auto items-center justify-between rounded border bg-card p-4 shadow"
             >
               <div className="flex items-center gap-4">

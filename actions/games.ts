@@ -110,6 +110,9 @@ export const fetchAllPendingGamesFromDb = async () => {
   return await prisma.game.findMany({
     where: {
       winnerTeam: null,
+      startTime: {
+        lte: new Date(Date.now()),
+      }
     },
   });
 };

@@ -81,6 +81,7 @@ export const refreshPredictions = async () => {
 
       await updateGameWinnerTeam(pendingGame.id, winnerTeam);
       await upsertPredictionResult(pendingGame.id, winnerTeam);
+      console.log(`✅ Updated game ${pendingGame.apiGameId} with winner ${winnerTeam}`);
     }
   }
 };

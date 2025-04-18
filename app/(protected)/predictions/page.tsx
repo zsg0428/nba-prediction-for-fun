@@ -6,12 +6,15 @@ import {
 import { format } from "date-fns";
 
 import PredictionsDashboard from "@/components/Predicitions/PredictionDashboard";
-import { getCurrentUser, getCurrentUserId } from "@/actions/user";
-import { fetchUsersPredictions, fetchAllPredictions } from "@/actions/prediction";
+import { getCurrentUserId } from "@/actions/user";
+import { fetchUsersPredictions, fetchAllPredictions, refreshPredictions } from "@/actions/prediction";
 
 import { PredictionMap } from "@/types/IPredictions";
 
 export default async function PredictionsPage() {
+  // Refresh predictions to ensure the latest data is available
+  await refreshPredictions();
+
   const today = format(new Date(), "yyyy-MM-dd");
   const todaysGames = await fetchTodayGames(today);
 

@@ -29,7 +29,7 @@ export const fetchTodayGames = async (date: string) => {
 };
 
 export const assignGameToRound = async (
-  gameApiId: string,
+  gameApiId: number,
   roundName: string,
 ) => {
   const round = await prisma.round.findUnique({
@@ -42,7 +42,7 @@ export const assignGameToRound = async (
   try {
     await prisma.game.update({
       where: {
-        apiGameId: parseInt(gameApiId),
+        apiGameId: gameApiId,
       },
       data: {
         roundId: round.id,
@@ -54,13 +54,13 @@ export const assignGameToRound = async (
   }
 };
 
-export const removeRoundFromGame = async (gameApiId: string) => {
+export const removeRoundFromGame = async (gameApiId: number) => {
   const game = await fetchSingleGameFromDb(gameApiId);
 
   try {
     await prisma.game.update({
       where: {
-        apiGameId: parseInt(gameApiId),
+        apiGameId: gameApiId,
       },
       data: {
         roundId: null,
@@ -72,10 +72,10 @@ export const removeRoundFromGame = async (gameApiId: string) => {
   }
 };
 
-export const fetchSingleGameFromDb = async (gameApiId: string) => {
+export const fetchSingleGameFromDb = async (gameApiId: number) => {
   const game = await prisma.game.findUnique({
     where: {
-      apiGameId: parseInt(gameApiId),
+      apiGameId: gameApiId,
     },
     include: {
       round: true,
@@ -87,7 +87,7 @@ export const fetchSingleGameFromDb = async (gameApiId: string) => {
   return game;
 };
 
-export const fetchSingleGameIdAndIfStarted = async (gameApiId: string) => {
+export const fetchSingleGameIdAndIfStarted = async (gameApiId: number) => {
   const game = await fetchSingleGameFromDb(gameApiId);
   return { gameId: game.id, started: Date.now() > game.startTime.getTime() };
 };

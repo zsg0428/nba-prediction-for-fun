@@ -9,20 +9,13 @@ import { toast } from "sonner";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import { AssignRoundAndPoints } from "@/components/Games/AssignRoundAndPoints";
+import { Game } from "@/types/IGames";
 
-type Game = {
-  id: string;
-  date: string; // e.g. "2025-04-07"
-  datetime?: string; // full ISO datetime string
-  home_team: { name: string };
-  visitor_team: { name: string };
-  round: string;
-};
 
 type Props = {
-  games: any[];
+  games: Game[];
   guesses?: Record<string, string>;
-  onGuess?: (gameId: string, team: string) => void;
+  onGuess?: (gameApiId: number, team: string) => void;
   isPrediction?: boolean;
 };
 
@@ -46,12 +39,12 @@ export default function AllGamesSection({
     }, {});
   };
 
-  const grouped = groupGamesByDate(games);
-  const dateKeys = Object.keys(grouped).sort(); // ascending order
+  const groupeGames = groupGamesByDate(games);
+  const dateKeys = Object.keys(groupeGames).sort(); // ascending order
 
-  const handleAssignRound = async (gameId: string, roundName: string) => {
+  const handleAssignRound = async (gameApiId: number, roundName: string) => {
     try {
-      await assignGameToRound(gameId, roundName);
+      await assignGameToRound(gameApiId, roundName);
       toast.success("Assign points successful");
     } catch (e) {
       toast.error("assign round and points failed");
@@ -66,16 +59,18 @@ export default function AllGamesSection({
         <div key={date} className="space-y-3">
           <h3 className="text-xl font-bold text-primary">{date}</h3>
           <div className="grid gap-4 sm:grid-cols-2">
-            {grouped[date].map((game) => (
+            {groupeGames[date].map((game) => (
               <Card key={game.id}>
                 <CardContent className="space-y-2 p-4">
-                  <div className="font-semibold">
-                    {game.home_team.name} vs {game.visitor_team.name}
+                  <div className="text-large font-semibold">
+                    {game.round || "Please assign a round to this game"}
                   </div>
                   <div className="text-sm text-muted-foreground">
                     {format(new Date(game.datetime), "PPpp")}
                   </div>
-
+                  <div className="font-semibold">
+                    {game.home_team.name} vs {game.visitor_team.name}
+                  </div>
                   <div className="flex gap-2">
                     {isPrediction
                       ? [game.home_team.name, game.visitor_team.name].map(
@@ -88,7 +83,7 @@ export default function AllGamesSection({
                                   ? ("default" as const)
                                   : ("outline" as const)
                               }
-                              onClick={() => onGuess?.(String(game.id), team)}
+                              onClick={() => onGuess?.(game.id, team)}
                             >
                               {team}
                             </Button>
@@ -96,14 +91,11 @@ export default function AllGamesSection({
                         )
                       : ""}
                   </div>
-                  <div className="text-sm">
-                    Round: {game.round || "Please assign a round to this game"}
-                  </div>
                 </CardContent>
                 <AssignRoundAndPoints
                   gameId={game.id}
                   onSubmit={(gameId, round) =>
-                    handleAssignRound(String(gameId), round)
+                    handleAssignRound(gameId as number, round)
                   }
                 />
               </Card>

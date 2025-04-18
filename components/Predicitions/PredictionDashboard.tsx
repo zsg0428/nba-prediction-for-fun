@@ -10,17 +10,7 @@ import { toast } from "sonner";
 import { Separator } from "@/components/ui/separator";
 import AllGamesSection from "@/components/Games/AllGamesSection";
 import TodaysGamesSection from "@/components/Games/TodaysGameSection";
-
-type Game = {
-  id: number | string;
-  date: string; // e.g. "2025-04-07"
-  datetime?: string; // full ISO datetime string
-  status: string;
-  home_team: { name: string };
-  home_team_score: number;
-  visitor_team: { name: string };
-  visitor_team_score: number;
-};
+import { PredictionMap } from "@/types/IPredictions";
 
 type PredictionsDashboardProps = {
   todaysGames: {
@@ -31,17 +21,21 @@ type PredictionsDashboardProps = {
     data: any[];
     meta: Record<string, any>;
   };
+  currentUserGueeses: Record<number, string>;
+  allOtherGameGuesses: PredictionMap;
 };
 
 export default function PredictionsDashboard({
   todaysGames,
   allGames,
+  currentUserGueeses,
+  allOtherGameGuesses,
 }: PredictionsDashboardProps) {
   // console.log(allGamesData);
 
-  const [guesses, setGuesses] = useState<Record<string, string>>({});
+  const [guesses, setGuesses] = useState<Record<number, string>>(currentUserGueeses);
 
-  const handleGuess = async (gameApiId: string, team: string) => {
+  const handleGuess = async (gameApiId: number, team: string) => {
     setGuesses((prev) => ({ ...prev, [gameApiId]: team }));
 
     const userId = await getCurrentUserId();
@@ -70,6 +64,7 @@ export default function PredictionsDashboard({
         games={todaysGames.data}
         guesses={guesses}
         onGuess={handleGuess}
+        allOtherGameGuesses={allOtherGameGuesses}
       />
       <Separator />
       {/* All Games */}

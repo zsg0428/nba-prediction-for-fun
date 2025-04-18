@@ -107,3 +107,36 @@ const fetchPredictionsByGameId = async (gameId: string) => {
     },
   });
 };
+
+export const fetchUsersPredictions = async (userId: string) => {
+  return await prisma.prediction.findMany({
+    where: {
+      userId: userId,
+    },
+    include: {
+      game: {
+        select: {
+          apiGameId: true,
+        },
+      },
+    }, 
+  });
+}
+
+export const fetchAllPredictions = async () => {
+  return await prisma.prediction.findMany({
+    include: {
+      game: {
+        select: {
+          apiGameId: true,
+        },
+      },
+      user: {
+        select: {
+          id: true,
+          name: true,
+        }
+      }
+    }, 
+  });
+};

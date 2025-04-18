@@ -6,6 +6,10 @@ import {
 import { format } from "date-fns";
 
 import PredictionsDashboard from "@/components/Predicitions/PredictionDashboard";
+import { getCurrentUser, getCurrentUserId } from "@/actions/user";
+import { fetchUsersPredictions, fetchAllPredictions } from "@/actions/prediction";
+
+import { PredictionMap } from "@/types/IPredictions";
 
 export default async function PredictionsPage() {
   const today = format(new Date(), "yyyy-MM-dd");
@@ -27,10 +31,44 @@ export default async function PredictionsPage() {
     ...game,
     round: roundMap[String(game.id)] ?? null,
   }));
+
+  const currentUserGueeses = await fetchCurrentUserGueeses();
+  const allOtherUserGuesses = await fetchAllUserGuesses();
+
   return (
     <PredictionsDashboard
       todaysGames={{ data: todayGamesWithRound, meta: todaysGames.meta ?? {} }}
       allGames={{ data: allGamesWithRound, meta: allGames.meta ?? {} }}
+      currentUserGueeses={currentUserGueeses}
+      allOtherGameGuesses={allOtherUserGuesses}
     />
   );
+}
+
+
+const fetchCurrentUserGueeses = async () => {
+  const userId = await getCurrentUserId();
+  const currentUserPredictions = await fetchUsersPredictions(userId);
+  const currentUserGueeses = Object.fromEntries(
+    currentUserPredictions.map((p) => [p.game.apiGameId, p.predictedTeam]),
+  );
+
+  return currentUserGueeses;
+}
+
+const fetchAllUserGuesses = async () => {
+  const currentUserId = await getCurrentUserId();
+  const allPredictions = await fetchAllPredictions();
+  const groupedPredictions: PredictionMap = {};
+
+  for (const { game, user, predictedTeam } of allPredictions) {
+    if (!groupedPredictions[game.apiGameId]) {
+      groupedPredictions[game.apiGameId] = [];
+    }
+    if (user.id !== currentUserId) {
+      groupedPredictions[game.apiGameId].push({ user: user.name, predictedTeam });
+    }
+  }
+
+  return groupedPredictions
 }

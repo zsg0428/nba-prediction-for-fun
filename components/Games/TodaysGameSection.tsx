@@ -4,11 +4,11 @@ import { assignGameToRound } from "@/actions/games";
 import { format } from "date-fns";
 import { toast } from "sonner";
 
-import { Button } from "@/components/ui/button";
-import { Card, CardContent } from "@/components/ui/card";
+import { Card } from "@/components/ui/card";
 import { AssignRoundAndPoints } from "@/components/Games/AssignRoundAndPoints";
 import { Game } from "@/types/IGames";
 import { PredictionMap } from "@/types/IPredictions";
+import { GameCard } from "../Predicitions/GameCard";
 
 type Props = {
   games: Game[];
@@ -36,51 +36,12 @@ export default function TodaysGamesSection({ games, guesses, onGuess, allOtherGa
         {games.length > 0 ? (
           games.map((game) => (
             <Card key={game.id}>
-              <CardContent className="space-y-3 p-4">
-                <div className="text-large font-semibold">
-                  {game.round || "Please assign a round to this game"}
-                </div>
-                <div>
-                  {isNaN(new Date(game.status).getTime())
-                    ? `${game.status === "Final" ? "✅" : "🏀"} ${game.status}`
-                    : "🗓️ Scheduled"}
-                </div>
-                <div className="text-sm text-muted-foreground">
-                  {format(new Date(game.datetime), "PPpp")}
-                </div>
-                <div className="text-lg font-semibold">
-                  {game.home_team.name} vs {game.visitor_team.name}
-                </div>
-                <div className="text-lg font-semibold">
-                  {game.home_team_score} : {game.visitor_team_score}
-                </div>
-                <div className="flex gap-3">
-                  Your Choice:
-                </div>             
-                <div className="flex gap-3">
-                  {[game.home_team.name, game.visitor_team.name].map((team) => (
-                    <Button
-                      key={team}
-                      variant={
-                        guesses[game.id] === team ? "default" : "outline"
-                      }
-                      onClick={() => onGuess(game.id, team)}
-                    >
-                      {team}
-                    </Button>
-                  ))}
-                </div>
-                <div>
-                  Other Guesses:
-                </div>
-                <div className="flex gap-3">
-                  {allOtherGameGuesses[game.id]?.map((guess) => (
-                    <span key={guess.user} className="text-sm text-muted-foreground">
-                      {guess.user}: {guess.predictedTeam}
-                    </span>
-                  ))}
-                </div>
-              </CardContent>
+              <GameCard
+                game={game}
+                predictedTeam={guesses[game.id] ?? ""}
+                onGuess={(gameId, team) => onGuess(gameId, team)}
+                allOtherGameGuesses={allOtherGameGuesses}
+              />
               <AssignRoundAndPoints
                 gameId={game.id}
                 onSubmit={(gameId, round) =>

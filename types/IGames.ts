@@ -7,4 +7,5 @@ export type Game = {
     visitor_team: { name: string };
     visitor_team_score: number;
     round: string;
+    time: string;
 };

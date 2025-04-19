@@ -1,57 +1,66 @@
 // components/predictions/GameCard.tsx
 "use client";
 
-import { cn } from "@/lib/utils";
+import { Button } from "@/components/ui/button";
+import { CardContent } from "@/components/ui/card";
+import { format } from "date-fns";
+
+import { Game } from "@/types/IGames";
+import { PredictionMap } from "@/types/IPredictions";
 
 interface GameCardProps {
-  game: {
-    id: string;
-    home: string;
-    away: string;
-    startTime: string;
-  };
-  guess?: string;
-  onGuess: (gameId: string, team: string) => void;
+  game: Game;
+  predictedTeam: string;
+  onGuess: (gameApiId: number, team: string) => void;
+  allOtherGameGuesses: PredictionMap;
 }
 
-export const GameCard = ({ game, guess, onGuess }: GameCardProps) => {
-  const now = new Date();
-  const gameStart = new Date(game.startTime);
-  const hasStarted = gameStart <= now;
-
+export const GameCard = ({ game, predictedTeam, onGuess, allOtherGameGuesses }: GameCardProps) => {
   return (
-    <div
-      className={cn(
-        "rounded-lg border p-4 transition-all",
-        hasStarted ? "opacity-50" : "bg-card shadow-sm",
-      )}
-    >
-      <div className="mb-2 flex flex-col text-base font-semibold sm:flex-row sm:items-center sm:justify-between sm:text-lg">
-        <span>
-          {game.home} vs {game.away}
-        </span>
-        <span className="text-sm text-muted-foreground">
-          {gameStart.toLocaleString()}
-        </span>
+    <CardContent className="space-y-3 p-4">
+      <div className="text-large font-semibold">
+        {game.round || "Please assign a round to this game"}
       </div>
-
-      <div className="mt-2 flex flex-wrap gap-4">
-        {[game.home, game.away].map((team) => (
-          <button
+      <div>
+        {isNaN(new Date(game.status).getTime())
+          ? `${game.status === "Final" ? "✅" : "🏀"} ${game.status} ${game.time}`
+          : "🗓️ Scheduled"}
+      </div>
+      <div className="text-sm text-muted-foreground">
+        {format(new Date(game.datetime), "PPpp")}
+      </div>
+      <div className="text-lg font-semibold">
+        {game.home_team.name} vs {game.visitor_team.name}
+      </div>
+      <div className="text-lg font-semibold">
+        {game.home_team_score} : {game.visitor_team_score}
+      </div>
+      <div className="flex gap-3">
+        Your Choice:
+      </div>             
+      <div className="flex gap-3">
+        {[game.home_team.name, game.visitor_team.name].map((team) => (
+          <Button
             key={team}
-            className={cn(
-              "rounded border px-4 py-2 text-sm text-black dark:text-white sm:text-base",
-              guess === team
-                ? "bg-primary text-white dark:text-black"
-                : "hover:bg-muted",
-            )}
-            disabled={hasStarted}
+            variant={
+              predictedTeam === team ? "default" : "outline"
+            }
             onClick={() => onGuess(game.id, team)}
           >
             {team}
-          </button>
+          </Button>
         ))}
       </div>
-    </div>
+      <div>
+        Others' Predictions:
+      </div>
+      <div className="flex gap-3">
+        {allOtherGameGuesses[game.id]?.map((guess) => (
+          <span key={guess.user} className="text-sm text-muted-foreground">
+            {guess.user}: {guess.predictedTeam}
+          </span>
+        ))}
+      </div>
+    </CardContent>
   );
 };

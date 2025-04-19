@@ -36,13 +36,12 @@ export default function PredictionsDashboard({
   const [guesses, setGuesses] = useState<Record<number, string>>(currentUserGueeses);
 
   const handleGuess = async (gameApiId: number, team: string) => {
-    setGuesses((prev) => ({ ...prev, [gameApiId]: team }));
-
     const userId = await getCurrentUserId();
     const { gameId, started } = await fetchSingleGameIdAndIfStarted(gameApiId);
 
     if (!started) {
       await upsertPrediction({ userId, gameId, predictedTeam: team });
+      setGuesses((prev) => ({ ...prev, [gameApiId]: team }));
       toast.success(`Updated prediction to ${team}, good luck!`);
     } else {
       toast.error("Game has started, you cannot update prediction anymore!");

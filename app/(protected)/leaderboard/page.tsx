@@ -25,7 +25,6 @@ export default async function LeaderboardPage() {
                 />
                 <div>
                   <p className="font-semibold">{user.name ?? user.email}</p>
-                  <p className="text-sm text-muted-foreground">{user.email}</p>
                 </div>
               </div>
 

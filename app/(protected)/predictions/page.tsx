@@ -1,22 +1,28 @@
-import {
-  fetchAllGamesFromDb,
-  fetchGames,
-  fetchTodayGames,
-} from "@/actions/games";
+
 import { format } from "date-fns";
 
 import PredictionsDashboard from "@/components/Predicitions/PredictionDashboard";
 import { getCurrentUserId } from "@/actions/user";
+import {
+  fetchAllGamesFromDb,
+  fetchGames,
+  fetchGamesInSingleDay,
+  refreshTodaysGames,
+} from "@/actions/games";
 import { fetchUsersPredictions, fetchAllPredictions, refreshPredictions } from "@/actions/prediction";
-
 import { PredictionMap } from "@/types/IPredictions";
 
-export default async function PredictionsPage() {
-  // Refresh predictions to ensure the latest data is available
+const init = async () => {
+  // Fetch any required data or state here
+  await refreshTodaysGames();
   await refreshPredictions();
+}
+
+export default async function PredictionsPage() { 
+  await init();
 
   const today = format(new Date(), "yyyy-MM-dd");
-  const todaysGames = await fetchTodayGames(today);
+  const todaysGames = await fetchGamesInSingleDay(today);
 
   const allGames = await fetchGames(); // all games starting from 2025-04-07
 

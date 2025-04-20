@@ -4,6 +4,7 @@ import { format } from "date-fns";
 
 import { prisma } from "@/lib/db";
 import { api } from "@/lib/nbaApi";
+import { NBAGame } from "@balldontlie/sdk";
 
 // https://docs.balldontlie.io/?javascript#get-all-games   API doc
 export const fetchGames = async () => {
@@ -18,7 +19,7 @@ export const fetchGames = async () => {
   return allGames;
 };
 
-export const fetchTodayGames = async (date: string) => {
+export const fetchGamesInSingleDay = async (date: string) => {
   const todaysGames = await api.nba.getGames({
     seasons: [2024],
     per_page: 20,
@@ -123,3 +124,50 @@ export const fetchAllGamesFromDb = async () => {
   });
   return dbGames;
 };
+
+export const refreshGames = async () => {
+  const allGames = await fetchGames();
+
+  for (const game of allGames.data as (NBAGame & { datetime: string })[]) {
+    await prisma.game.upsert({
+      where: {
+        apiGameId: game.id,
+      },
+      update: {
+        homeTeam: game.home_team.name,
+        awayTeam: game.visitor_team.name,
+        startTime: new Date(game.datetime),
+      },
+      create: {
+        apiGameId: game.id,
+        homeTeam: game.home_team.name,
+        awayTeam: game.visitor_team.name,
+        startTime: new Date(game.datetime),
+      },
+    });
+  }
+}
+
+export const refreshTodaysGames = async () => {
+  const today = format(new Date(), "yyyy-MM-dd");
+  const todaysGames = await fetchGamesInSingleDay(today);
+
+  for (const game of todaysGames.data as (NBAGame & { datetime: string })[]) {
+    await prisma.game.upsert({
+      where: {
+        apiGameId: game.id,
+      },
+      update: {
+        homeTeam: game.home_team.name,
+        awayTeam: game.visitor_team.name,
+        startTime: new Date(game.datetime),
+      },
+      create: {
+        apiGameId: game.id,
+        homeTeam: game.home_team.name,
+        awayTeam: game.visitor_team.name,
+        startTime: new Date(game.datetime),
+      },
+    });
+  }
+}

@@ -52,7 +52,7 @@ export const GameCard = ({ game, predictedTeam, onGuess, allOtherGameGuesses }: 
         ))}
       </div>
       <div>
-        Others' Predictions:
+        Others&#39; Predictions:
       </div>
       <div className="flex gap-3">
         {allOtherGameGuesses[game.id]?.map((guess) => (

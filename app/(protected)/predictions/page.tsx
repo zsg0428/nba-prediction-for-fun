@@ -11,6 +11,7 @@ import {
 } from "@/actions/games";
 import { fetchUsersPredictions, fetchAllPredictions, refreshPredictions } from "@/actions/prediction";
 import { PredictionMap } from "@/types/IPredictions";
+import { NBAGame } from "@balldontlie/sdk";
 
 const init = async () => {
   // Fetch any required data or state here
@@ -21,7 +22,7 @@ const init = async () => {
 export default async function PredictionsPage() { 
   await init();
 
-  const today = format(new Date(), "yyyy-MM-dd");
+  const today = format(new Date().toLocaleString("en-US", { timeZone: "America/New_York" }), "yyyy-MM-dd");
   const todaysGames = await fetchGamesInSingleDay(today);
 
   const allGames = await fetchGames(); // all games starting from 2025-04-07
@@ -36,10 +37,14 @@ export default async function PredictionsPage() {
     round: roundMap[String(game.id)] ?? null,
   }));
 
-  const todayGamesWithRound = todaysGames.data.map((game) => ({
+  const todayGamesWithRound = (todaysGames.data as (NBAGame & { datetime: string })[]).map((game) => ({
     ...game,
     round: roundMap[String(game.id)] ?? null,
-  }));
+  })).sort((a, b) => {
+    const datetimeA = new Date(a.datetime);
+    const datetimeB = new Date(b.datetime);
+    return datetimeA.getTime() - datetimeB.getTime();
+  });
 
   const currentUserGueeses = await fetchCurrentUserGueeses();
   const allOtherUserGuesses = await fetchAllUserGuesses();

@@ -4,7 +4,8 @@ import { format } from "date-fns";
 
 import { prisma } from "@/lib/db";
 import { api } from "@/lib/nbaApi";
-import { NBAGame } from "@balldontlie/sdk";
+import { ApiResponse, NBAGame } from "@balldontlie/sdk";
+import { Game } from "@/types/IGames";
 
 // https://docs.balldontlie.io/?javascript#get-all-games   API doc
 export const fetchGames = async () => {

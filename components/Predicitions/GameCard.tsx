@@ -54,7 +54,7 @@ export const GameCard = ({ game, predictedTeam, onGuess, allOtherGameGuesses }: 
       <div>
         Others&#39; Predictions:
       </div>
-      <div className="flex gap-3">
+      <div className="flex flex-col gap-1">
         {allOtherGameGuesses[game.id]?.map((guess) => (
           <span key={guess.user} className="text-sm text-muted-foreground">
             {guess.user}: {guess.predictedTeam}

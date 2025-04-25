@@ -33,21 +33,21 @@ export default function PastGamesSection({ finishedGames }: Props) {
         {sortedGames.length > 0 ? (
           sortedGames.map((game) => (
             <Card key={game.id} className="w-full">
-              <CardContent className="flex items-center justify-between p-4">
-                <div className="flex items-center gap-6">
-                  <div className="min-w-[100px] font-semibold">
+              <CardContent className="flex flex-col sm:flex-row items-start sm:items-center justify-between p-4 gap-4">
+                <div className="flex flex-col sm:flex-row items-start sm:items-center gap-3 sm:gap-6 w-full">
+                  <div className="text-sm font-semibold">
                     {game.round?.name || "Unassigned"}
                   </div>
-                  <div className="min-w-[180px] text-sm text-muted-foreground">
+                  <div className="text-sm text-muted-foreground">
                     {format(game.startTime, "PPp")}
                   </div>
-                  <div className="min-w-[200px]">
+                  <div className="text-sm">
                     {game.homeTeam} vs {game.awayTeam}
                   </div>
                 </div>
-                <div className="flex items-center gap-2">
-                  <span className="font-medium">Winner:</span>
-                  <span className="text-green-600 dark:text-green-400">
+                <div className="flex items-center gap-2 mt-2 sm:mt-0">
+                  <span className="text-sm font-medium">Winner:</span>
+                  <span className="text-sm text-green-600 dark:text-green-400">
                     {game.winnerTeam}
                   </span>
                 </div>

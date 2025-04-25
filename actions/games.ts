@@ -126,6 +126,23 @@ export const fetchAllGamesFromDb = async () => {
   return dbGames;
 };
 
+export const fetchFinishedGamesSince = async (date: Date) => {
+  const finishedGames = await prisma.game.findMany({
+    where: {
+      startTime: {
+        gte: date,
+      },
+      winnerTeam: {
+        not: null,
+      },
+    },
+    include: {
+      round: true,
+    },
+  });
+  return finishedGames;
+};
+
 export const refreshGames = async () => {
   const allGames = await fetchGames();
 

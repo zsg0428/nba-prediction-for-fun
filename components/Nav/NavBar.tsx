@@ -32,8 +32,8 @@ export const NavBar = ({ session }: { session: Session | null }) => {
           <Link href="/predictions" className="hover:underline">
             Predictions
           </Link>
-          <Link href="/schedule" className="hover:underline">
-            All Schedules
+          <Link href="/pastGames" className="hover:underline">
+            Past Games
           </Link>
           <Link href="/leaderboard" className="hover:underline">
             Leaderboard
@@ -98,11 +98,11 @@ export const NavBar = ({ session }: { session: Session | null }) => {
             Predictions
           </Link>
           <Link
-            href="/schedule"
+            href="/pastGames"
             className="block text-sm"
             onClick={() => setMobileOpen(false)}
           >
-            All Schedules
+            Past Games
           </Link>
           <Link
             href="/leaderboard"

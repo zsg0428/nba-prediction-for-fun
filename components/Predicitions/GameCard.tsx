@@ -3,7 +3,7 @@
 
 import { Button } from "@/components/ui/button";
 import { CardContent } from "@/components/ui/card";
-import { format } from "date-fns";
+import { formatInTimeZone } from "date-fns-tz";
 
 import { Game } from "@/types/IGames";
 import { PredictionMap } from "@/types/IPredictions";
@@ -27,7 +27,7 @@ export const GameCard = ({ game, predictedTeam, onGuess, allOtherGameGuesses }: 
           : "🗓️ Scheduled"}
       </div>
       <div className="text-sm text-muted-foreground">
-        {format(new Date(game.datetime), "PPpp")}
+        {formatInTimeZone(new Date(game.datetime),  'America/New_York', "PPp")}
       </div>
       <div className="text-lg font-semibold">
         {game.home_team.name} vs {game.visitor_team.name}

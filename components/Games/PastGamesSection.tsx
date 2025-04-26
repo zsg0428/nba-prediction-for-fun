@@ -1,5 +1,5 @@
 import { Card, CardContent } from "@/components/ui/card";
-import { format } from "date-fns";
+import { formatInTimeZone } from "date-fns-tz";
 
 interface FinishedGame {
   id: string;
@@ -39,7 +39,7 @@ export default function PastGamesSection({ finishedGames }: Props) {
                     {game.round?.name || "Unassigned"}
                   </div>
                   <div className="text-sm text-muted-foreground">
-                    {format(game.startTime, "PPp")}
+                    {formatInTimeZone(game.startTime, 'America/New_York', 'PPp')}
                   </div>
                   <div className="text-sm">
                     {game.homeTeam} vs {game.awayTeam}

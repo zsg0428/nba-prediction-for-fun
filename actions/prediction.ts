@@ -86,6 +86,7 @@ export const refreshPredictions = async () => {
       }
     }
     catch (error) {
+      await updateGameWinnerTeam(pendingGame.id, "No Winner");
       console.error(`❌ Failed to fetch game ${pendingGame.apiGameId}:`, error);
     }
   }

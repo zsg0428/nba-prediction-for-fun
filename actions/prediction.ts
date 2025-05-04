@@ -72,16 +72,21 @@ export const refreshPredictions = async () => {
   const pendingGames = await fetchAllPendingGamesFromDb();
 
   for (let pendingGame of pendingGames) {
-    const game = await api.nba.getGame(pendingGame.apiGameId);
-    if (game.data.status === "Final") {
-      const winnerTeam =
-        game.data.home_team_score > game.data.visitor_team_score
-          ? game.data.home_team.name
-          : game.data.visitor_team.name;
-
-      await updateGameWinnerTeam(pendingGame.id, winnerTeam);
-      await upsertPredictionResult(pendingGame.id, winnerTeam);
-      console.log(`✅ Updated game ${pendingGame.apiGameId} with winner ${winnerTeam}`);
+    try {
+      const game = await api.nba.getGame(pendingGame.apiGameId);
+      if (game.data.status === "Final") {
+        const winnerTeam =
+          game.data.home_team_score > game.data.visitor_team_score
+            ? game.data.home_team.name
+            : game.data.visitor_team.name;
+  
+        await updateGameWinnerTeam(pendingGame.id, winnerTeam);
+        await upsertPredictionResult(pendingGame.id, winnerTeam);
+        console.log(`✅ Updated game ${pendingGame.apiGameId} with winner ${winnerTeam}`);
+      }
+    }
+    catch (error) {
+      console.error(`❌ Failed to fetch game ${pendingGame.apiGameId}:`, error);
     }
   }
 };

@@ -12,7 +12,7 @@ interface GameCardProps {
   game: Game;
   predictedTeam: string;
   onGuess: (gameApiId: number, team: string) => void;
-  allOtherGameGuesses: PredictionMap;
+  allOtherGameGuesses?: PredictionMap;
 }
 
 export const GameCard = ({ game, predictedTeam, onGuess, allOtherGameGuesses }: GameCardProps) => {
@@ -28,6 +28,9 @@ export const GameCard = ({ game, predictedTeam, onGuess, allOtherGameGuesses }: 
       </div>
       <div className="text-sm text-muted-foreground">
         {formatInTimeZone(new Date(game.datetime),  'America/New_York', "PPp")}
+      </div>
+      <div className="text-sm text-muted-foreground">
+        Home | Away
       </div>
       <div className="text-lg font-semibold">
         {game.home_team.name} vs {game.visitor_team.name}
@@ -51,16 +54,21 @@ export const GameCard = ({ game, predictedTeam, onGuess, allOtherGameGuesses }: 
           </Button>
         ))}
       </div>
-      <div>
-        Others&#39; Predictions:
-      </div>
-      <div className="flex flex-col gap-1">
-        {allOtherGameGuesses[game.id]?.map((guess) => (
-          <span key={guess.user} className="text-sm text-muted-foreground">
-            {guess.user}: {guess.predictedTeam}
-          </span>
-        ))}
-      </div>
+      { allOtherGameGuesses ? (
+          <>
+            <div>
+              Others&#39; Predictions:
+            </div>
+            <div className="flex flex-col gap-1">
+              {allOtherGameGuesses[game.id]?.map((guess) => (
+                <span key={guess.user} className="text-sm text-muted-foreground">
+                  {guess.user}: {guess.predictedTeam}
+                </span>
+              ))}
+            </div>
+          </>
+        ) : (null)
+      }
     </CardContent>
   );
 };

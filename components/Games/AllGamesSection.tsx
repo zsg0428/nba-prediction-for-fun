@@ -10,13 +10,13 @@ import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import { AssignRoundAndPoints } from "@/components/Games/AssignRoundAndPoints";
 import { Game } from "@/types/IGames";
+import { GameCard } from "../Predicitions/GameCard";
 
 
 type Props = {
   games: Game[];
-  guesses?: Record<string, string>;
-  onGuess?: (gameApiId: number, team: string) => void;
-  isPrediction?: boolean;
+  guesses: Record<string, string>;
+  onGuess: (gameApiId: number, team: string) => void;
 };
 
 type GroupedGames = {
@@ -27,7 +27,6 @@ export default function AllGamesSection({
   games,
   onGuess,
   guesses,
-  isPrediction = true,
 }: Props) {
   const [visibleDates, setVisibleDates] = useState(3); // show 3 days initially
   const groupGamesByDate = (games: any[]): GroupedGames => {
@@ -61,37 +60,12 @@ export default function AllGamesSection({
           <div className="grid gap-4 sm:grid-cols-2">
             {groupeGames[date].map((game) => (
               <Card key={game.id}>
-                <CardContent className="space-y-2 p-4">
-                  <div className="text-large font-semibold">
-                    {game.round || "Please assign a round to this game"}
-                  </div>
-                  <div className="text-sm text-muted-foreground">
-                    {format(new Date(game.datetime), "PPpp")}
-                  </div>
-                  <div className="font-semibold">
-                    {game.home_team.name} vs {game.visitor_team.name}
-                  </div>
-                  <div className="flex gap-2">
-                    {isPrediction
-                      ? [game.home_team.name, game.visitor_team.name].map(
-                          (team: string) => (
-                            <Button
-                              key={team}
-                              size="sm"
-                              variant={
-                                guesses?.[game.id] === team
-                                  ? ("default" as const)
-                                  : ("outline" as const)
-                              }
-                              onClick={() => onGuess?.(game.id, team)}
-                            >
-                              {team}
-                            </Button>
-                          ),
-                        )
-                      : ""}
-                  </div>
-                </CardContent>
+                <GameCard
+                  game={game}
+                  predictedTeam={guesses[game.id] ?? ""}
+                  onGuess={(gameId, team) => onGuess(gameId, team)}
+                  allOtherGameGuesses={undefined}
+                />
                 <AssignRoundAndPoints
                   gameId={game.id}
                   onSubmit={(gameId, round) =>

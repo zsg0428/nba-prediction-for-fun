@@ -31,7 +31,7 @@ export default function PastGamesSection({ finishedGames }: Props) {
       </div>
       <div className="flex flex-col gap-4">
         {sortedGames.length > 0 ? (
-          sortedGames.map((game) => (
+          sortedGames.map((game) => game.winnerTeam !== 'No' ? (
             <Card key={game.id} className="w-full">
               <CardContent className="flex flex-col items-start justify-between gap-4 p-4 sm:flex-row sm:items-center">
                 <div className="flex w-full flex-col items-start gap-3 sm:flex-row sm:items-center sm:gap-6">
@@ -53,7 +53,8 @@ export default function PastGamesSection({ finishedGames }: Props) {
                 </div>
               </CardContent>
             </Card>
-          ))
+            ) : (null)
+          )
         ) : (
           <p className="col-span-2 text-center text-muted-foreground">
             No finished games found in the past week.

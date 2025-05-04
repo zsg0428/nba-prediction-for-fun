@@ -71,7 +71,6 @@ export default function PredictionsDashboard({
         games={allGames.data}
         guesses={guesses}
         onGuess={handleGuess}
-        isPrediction={true}
       />
     </main>
   );

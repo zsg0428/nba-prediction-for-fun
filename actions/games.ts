@@ -20,6 +20,16 @@ export const fetchGames = async () => {
   return allGames;
 };
 
+export const fetchGamesWithinDayRange = async (startDate: string, endDate: string) => {
+  const todaysGames = await api.nba.getGames({
+    seasons: [2024],
+    per_page: 100,
+    start_date: startDate,
+    end_date: endDate,
+  });
+  return todaysGames;
+};
+
 export const fetchGamesInSingleDay = async (date: string) => {
   const todaysGames = await api.nba.getGames({
     seasons: [2024],
@@ -143,8 +153,17 @@ export const fetchFinishedGamesSince = async (date: Date) => {
   return finishedGames;
 };
 
-export const refreshGames = async () => {
-  const allGames = await fetchGames();
+export const refreshGamesWithinOneMonth = async () => {
+  const today = format(new Date(), "yyyy-MM-dd");
+  const oneMonthFromToday = format(
+    new Date(new Date().setMonth(new Date().getMonth() + 1)),
+    "yyyy-MM-dd",
+  );
+
+  const allGames = await fetchGamesWithinDayRange(
+    today,
+    oneMonthFromToday,
+  );
 
   for (const game of allGames.data as (NBAGame & { datetime: string })[]) {
     await prisma.game.upsert({

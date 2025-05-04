@@ -15,12 +15,14 @@ export const seedGames = async () => {
         homeTeam: game.home_team.name,
         awayTeam: game.visitor_team.name,
         startTime: new Date(game.datetime),
+        isPlayoff: game.postseason,
       },
       create: {
         apiGameId: game.id,
         homeTeam: game.home_team.name,
         awayTeam: game.visitor_team.name,
         startTime: new Date(game.datetime),
+        isPlayoff: game.postseason,
       },
     });
   }

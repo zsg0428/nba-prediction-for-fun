@@ -4,8 +4,7 @@ import { format } from "date-fns";
 
 import { prisma } from "@/lib/db";
 import { api } from "@/lib/nbaApi";
-import { ApiResponse, NBAGame } from "@balldontlie/sdk";
-import { Game } from "@/types/IGames";
+import { NBAGame } from "@balldontlie/sdk";
 
 // https://docs.balldontlie.io/?javascript#get-all-games   API doc
 export const fetchGames = async () => {
@@ -174,12 +173,14 @@ export const refreshGamesWithinOneMonth = async () => {
         homeTeam: game.home_team.name,
         awayTeam: game.visitor_team.name,
         startTime: new Date(game.datetime),
+        isPlayoff: game.postseason,
       },
       create: {
         apiGameId: game.id,
         homeTeam: game.home_team.name,
         awayTeam: game.visitor_team.name,
         startTime: new Date(game.datetime),
+        isPlayoff: game.postseason,
       },
     });
   }
@@ -198,12 +199,14 @@ export const refreshTodaysGames = async () => {
         homeTeam: game.home_team.name,
         awayTeam: game.visitor_team.name,
         startTime: new Date(game.datetime),
+        isPlayoff: game.postseason,
       },
       create: {
         apiGameId: game.id,
         homeTeam: game.home_team.name,
         awayTeam: game.visitor_team.name,
         startTime: new Date(game.datetime),
+        isPlayoff: game.postseason,
       },
     });
   }

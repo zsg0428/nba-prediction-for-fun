@@ -135,6 +135,19 @@ export const fetchAllGamesFromDb = async () => {
   return dbGames;
 };
 
+export const fetchAllSortedPlayoffGamesFromDb = async () => {
+  const dbGames = await prisma.game.findMany({
+    where: {
+      isPlayoff: true,
+    },
+    orderBy: {
+      startTime: "asc",
+    },
+    include: { round: true },
+  });
+  return dbGames;
+};
+
 export const fetchFinishedGamesSince = async (date: Date) => {
   const finishedGames = await prisma.game.findMany({
     where: {
@@ -186,28 +199,52 @@ export const refreshGamesWithinOneMonth = async () => {
   }
 }
 
-export const refreshTodaysGames = async () => {
-  const today = format(new Date(), "yyyy-MM-dd");
-  const todaysGames = await fetchGamesInSingleDay(today);
+export const refreshGameRounds = async () => {
+  const sortedPlayoffGamesByStartTime = await fetchAllSortedPlayoffGamesFromDb();
+  const indexedRounds = ["First Round", "Conference Semifinals", "Conference Finals", "Finals"];
 
-  for (const game of todaysGames.data as (NBAGame & { datetime: string })[]) {
-    await prisma.game.upsert({
-      where: {
-        apiGameId: game.id,
-      },
-      update: {
-        homeTeam: game.home_team.name,
-        awayTeam: game.visitor_team.name,
-        startTime: new Date(game.datetime),
-        isPlayoff: game.postseason,
-      },
-      create: {
-        apiGameId: game.id,
-        homeTeam: game.home_team.name,
-        awayTeam: game.visitor_team.name,
-        startTime: new Date(game.datetime),
-        isPlayoff: game.postseason,
-      },
-    });
+  // Calculate matchups for each team
+  const teamToMatchupMap = new Map<string, string[]>();
+  for (const game of sortedPlayoffGamesByStartTime) {
+    const homeTeam = game.homeTeam;
+    const awayTeam = game.awayTeam;
+
+    if (!teamToMatchupMap.has(homeTeam)) {
+      teamToMatchupMap.set(homeTeam, []);
+    }
+    if (!teamToMatchupMap.has(awayTeam)) {
+      teamToMatchupMap.set(awayTeam, []);
+    }
+
+    if (!teamToMatchupMap.get(homeTeam)?.includes(awayTeam)) {
+      teamToMatchupMap.get(homeTeam)?.push(awayTeam);
+    }
+  
+    if (!teamToMatchupMap.get(awayTeam)?.includes(homeTeam)) {
+      teamToMatchupMap.get(awayTeam)?.push(homeTeam);
+    }
+  }
+
+  // console.log("teamToMatchupMap", teamToMatchupMap);
+
+  // Assign rounds to unassinged games based on matchups
+  const unassignedGames = sortedPlayoffGamesByStartTime.filter((game) => !game.roundId);
+  for (const game of unassignedGames) {
+    const homeTeam = game.homeTeam;
+    const awayTeam = game.awayTeam;
+
+    const homeTeamMatchups = teamToMatchupMap.get(homeTeam);
+    const awayTeamMatchups = teamToMatchupMap.get(awayTeam);
+
+    if (homeTeamMatchups?.indexOf(awayTeam) !== undefined && homeTeamMatchups?.indexOf(awayTeam) === awayTeamMatchups?.indexOf(homeTeam)) {
+      const roundIndex = homeTeamMatchups?.indexOf(awayTeam);
+      const roundName = indexedRounds[roundIndex!];
+      try {
+        await assignGameToRound(game.apiGameId, roundName);
+        console.log(`✅ Assigned game ${game.homeTeam} (Home) vs ${game.awayTeam} (Away) on ${game.startTime} to round ${roundName}`);  
+      } catch (e) {
+        console.error(`❌ Failed to assign game ${game.homeTeam} (Home) vs ${game.awayTeam} (Away) on ${game.startTime} to round ${roundName}`, e);
+      }
+    }
   }
 }

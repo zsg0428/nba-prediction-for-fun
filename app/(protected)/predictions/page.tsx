@@ -8,6 +8,7 @@ import {
   fetchGames,
   fetchGamesInSingleDay,
   refreshGamesWithinOneMonth,
+  refreshGameRounds,
 } from "@/actions/games";
 import { fetchUsersPredictions, fetchAllPredictions, refreshPredictions } from "@/actions/prediction";
 import { PredictionMap } from "@/types/IPredictions";
@@ -16,6 +17,7 @@ import { NBAGame } from "@balldontlie/sdk";
 const init = async () => {
   // Fetch any required data or state here
   await refreshGamesWithinOneMonth();
+  await refreshGameRounds();
   await refreshPredictions();
 }
 

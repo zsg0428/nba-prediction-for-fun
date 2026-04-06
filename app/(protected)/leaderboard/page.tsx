@@ -38,20 +38,20 @@ export default async function LeaderboardPage() {
                     : "border-border bg-card"
               }`}
             >
-              <div className="flex items-center gap-4">
+              <div className="flex min-w-0 items-center gap-2.5 sm:gap-4">
                 {/* Rank */}
-                <div className="flex w-8 items-center justify-center">
+                <div className="flex w-7 shrink-0 items-center justify-center sm:w-8">
                   {isTop3 && style ? (
-                    <Medal className={`h-6 w-6 ${style.icon}`} />
+                    <Medal className={`h-5 w-5 sm:h-6 sm:w-6 ${style.icon}`} />
                   ) : (
-                    <span className="text-lg font-bold text-muted-foreground">
+                    <span className="text-base font-bold text-muted-foreground sm:text-lg">
                       {rank}
                     </span>
                   )}
                 </div>
 
                 {/* Avatar */}
-                <div className="relative h-10 w-10 overflow-hidden rounded-full bg-muted">
+                <div className="relative h-9 w-9 shrink-0 overflow-hidden rounded-full bg-muted sm:h-10 sm:w-10">
                   {user.image ? (
                     <Image
                       src={user.image}
@@ -60,15 +60,15 @@ export default async function LeaderboardPage() {
                       className="object-cover"
                     />
                   ) : (
-                    <div className="flex h-full w-full items-center justify-center bg-primary text-sm font-bold text-primary-foreground">
+                    <div className="flex h-full w-full items-center justify-center bg-primary text-xs font-bold text-primary-foreground sm:text-sm">
                       {(user.name ?? user.email).charAt(0).toUpperCase()}
                     </div>
                   )}
                 </div>
 
                 {/* Name */}
-                <div>
-                  <p className="font-semibold">
+                <div className="min-w-0">
+                  <p className="truncate text-sm font-semibold sm:text-base">
                     {user.name ?? user.email}
                     {isCurrentUser && (
                       <span className="ml-2 text-xs text-primary">(You)</span>

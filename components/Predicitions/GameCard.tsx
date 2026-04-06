@@ -80,28 +80,28 @@ export const GameCard = ({ game, predictedTeam, onGuess, allOtherGameGuesses }: 
       )}
 
       {/* Matchup: Team vs Team */}
-      <div className="flex items-center justify-between px-2">
+      <div className="flex items-center justify-between px-1 sm:px-2">
         {/* Home Team */}
-        <div className="flex flex-col items-center gap-1.5">
-          <TeamLogo teamName={game.home_team.name} size={48} />
-          <span className="text-sm font-semibold">{game.home_team.name}</span>
+        <div className="flex min-w-0 flex-col items-center gap-1">
+          <TeamLogo teamName={game.home_team.name} size={40} />
+          <span className="max-w-[70px] truncate text-xs font-semibold sm:max-w-none sm:text-sm">{game.home_team.name}</span>
           <span className="text-[10px] uppercase tracking-wide text-muted-foreground">Home</span>
         </div>
 
         {/* Score */}
         <div className="flex flex-col items-center gap-0.5">
-          <div className="text-3xl font-bold tabular-nums tracking-tight">
+          <div className="text-2xl font-bold tabular-nums tracking-tight sm:text-3xl">
             {game.home_team_score}
-            <span className="mx-1.5 text-muted-foreground">:</span>
+            <span className="mx-1 text-muted-foreground sm:mx-1.5">:</span>
             {game.visitor_team_score}
           </div>
           <span className="text-[10px] uppercase tracking-wider text-muted-foreground">vs</span>
         </div>
 
         {/* Away Team */}
-        <div className="flex flex-col items-center gap-1.5">
-          <TeamLogo teamName={game.visitor_team.name} size={48} />
-          <span className="text-sm font-semibold">{game.visitor_team.name}</span>
+        <div className="flex min-w-0 flex-col items-center gap-1">
+          <TeamLogo teamName={game.visitor_team.name} size={40} />
+          <span className="max-w-[70px] truncate text-xs font-semibold sm:max-w-none sm:text-sm">{game.visitor_team.name}</span>
           <span className="text-[10px] uppercase tracking-wide text-muted-foreground">Away</span>
         </div>
       </div>
@@ -111,20 +111,20 @@ export const GameCard = ({ game, predictedTeam, onGuess, allOtherGameGuesses }: 
         <p className="text-center text-xs font-medium uppercase tracking-wider text-muted-foreground">
           Your Pick
         </p>
-        <div className="flex justify-center gap-3">
+        <div className="flex justify-center gap-2 sm:gap-3">
           {[game.home_team.name, game.visitor_team.name].map((team) => {
             const isSelected = predictedTeam === team;
             return (
               <button
                 key={team}
                 onClick={() => onGuess(game.id, team)}
-                className={`flex cursor-pointer items-center gap-2 rounded-xl px-5 py-2.5 text-sm font-semibold transition-all duration-200 ${
+                className={`flex min-h-[44px] cursor-pointer items-center gap-1.5 rounded-xl px-3 py-2.5 text-xs font-semibold transition-all duration-200 sm:gap-2 sm:px-5 sm:text-sm ${
                   isSelected
                     ? "bg-primary text-primary-foreground shadow-lg shadow-primary/25 ring-2 ring-primary ring-offset-2 ring-offset-background"
                     : "border border-border bg-card text-foreground hover:-translate-y-0.5 hover:border-primary/50 hover:shadow-md"
                 }`}
               >
-                <TeamLogo teamName={team} size={20} />
+                <TeamLogo teamName={team} size={18} />
                 {team}
               </button>
             );

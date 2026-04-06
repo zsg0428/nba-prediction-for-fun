@@ -66,7 +66,7 @@ export const AssignRoundAndPoints = ({ gameId, onSubmit }: AssignProps) => {
 
   return (
     <div className="mt-4 flex flex-col items-center justify-evenly space-y-2 border-t pt-3">
-      <div className="flex items-center justify-center gap-4">
+      <div className="flex w-full flex-col items-center justify-center gap-2 px-2 sm:flex-row sm:gap-4 sm:px-0">
         <Select
           value={selectedRound}
           onValueChange={(value) => {
@@ -75,7 +75,7 @@ export const AssignRoundAndPoints = ({ gameId, onSubmit }: AssignProps) => {
             if (option) setPoint(option.point);
           }}
         >
-          <SelectTrigger className="w-[180px]">
+          <SelectTrigger className="w-full sm:w-[180px]">
             <SelectValue placeholder="Select round" />
           </SelectTrigger>
           <SelectContent>

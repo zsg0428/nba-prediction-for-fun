@@ -41,7 +41,7 @@ export default function RefreshButtons({
   return (
     <div className="flex flex-col gap-4">
       <h2 className="text-xl font-semibold">Data Refresh</h2>
-      <div className="flex gap-3">
+      <div className="flex flex-col gap-3 sm:flex-row">
         <RefreshButton label="Refresh Games & Rounds" action={refreshGames} />
         <RefreshButton label="Refresh Predictions" action={refreshPredictions} />
       </div>

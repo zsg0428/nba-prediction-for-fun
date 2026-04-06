@@ -51,33 +51,33 @@ export default function PastGamesSection({ finishedGames }: Props) {
         {sortedGames.length > 0 ? (
           sortedGames.map((game) => (
             <Card key={game.id} className="overflow-hidden transition-all hover:shadow-md">
-              <CardContent className="flex items-center justify-between gap-4 p-4">
-                {/* Left: Teams + Score */}
-                <div className="flex items-center gap-4">
-                  <div className="flex items-center gap-2">
+              <CardContent className="flex flex-col gap-3 p-3 sm:flex-row sm:items-center sm:justify-between sm:gap-4 sm:p-4">
+                {/* Teams + Score */}
+                <div className="flex items-center gap-2 sm:gap-4">
+                  <div className="flex items-center gap-1.5">
                     <TeamLogo teamName={game.homeTeam} />
-                    <span className={`text-sm font-semibold ${game.winnerTeam === game.homeTeam ? "text-green-600 dark:text-green-400" : ""}`}>
+                    <span className={`text-xs font-semibold sm:text-sm ${game.winnerTeam === game.homeTeam ? "text-green-600 dark:text-green-400" : ""}`}>
                       {game.homeTeam}
                     </span>
                   </div>
 
-                  <span className="text-sm font-bold tabular-nums text-muted-foreground">
+                  <span className="text-xs font-bold tabular-nums text-muted-foreground sm:text-sm">
                     {game.homeTeamScore ?? 0} - {game.awayTeamScore ?? 0}
                   </span>
 
-                  <div className="flex items-center gap-2">
-                    <span className={`text-sm font-semibold ${game.winnerTeam === game.awayTeam ? "text-green-600 dark:text-green-400" : ""}`}>
+                  <div className="flex items-center gap-1.5">
+                    <span className={`text-xs font-semibold sm:text-sm ${game.winnerTeam === game.awayTeam ? "text-green-600 dark:text-green-400" : ""}`}>
                       {game.awayTeam}
                     </span>
                     <TeamLogo teamName={game.awayTeam} />
                   </div>
                 </div>
 
-                {/* Right: Meta */}
-                <div className="flex flex-col items-end gap-1">
+                {/* Meta */}
+                <div className="flex items-center gap-3 sm:flex-col sm:items-end sm:gap-1">
                   <div className="flex items-center gap-1.5">
                     <CheckCircle2 className="h-3.5 w-3.5 text-green-500" />
-                    <span className="text-sm font-medium text-green-600 dark:text-green-400">
+                    <span className="text-xs font-medium text-green-600 dark:text-green-400 sm:text-sm">
                       {game.winnerTeam}
                     </span>
                   </div>

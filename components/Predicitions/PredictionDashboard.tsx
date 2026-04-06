@@ -58,11 +58,11 @@ export default function PredictionsDashboard({
       {/* Floating Rules FAB */}
       <Popover>
         <PopoverTrigger asChild>
-          <button className="fixed bottom-6 right-6 z-50 flex h-12 w-12 cursor-pointer items-center justify-center rounded-full bg-primary text-primary-foreground shadow-lg shadow-primary/25 transition-all hover:scale-105 hover:shadow-xl">
+          <button className="fixed bottom-6 right-4 z-50 flex h-12 w-12 cursor-pointer items-center justify-center rounded-full bg-primary text-primary-foreground shadow-lg shadow-primary/25 transition-all hover:scale-105 hover:shadow-xl sm:right-6">
             <Info className="h-5 w-5" />
           </button>
         </PopoverTrigger>
-        <PopoverContent align="end" side="top" className="w-64">
+        <PopoverContent align="end" side="top" className="w-60 max-w-[90vw] sm:w-64">
           <div className="space-y-2">
             <h4 className="text-sm font-semibold">Scoring Rules</h4>
             <ul className="space-y-1.5 text-sm text-muted-foreground">

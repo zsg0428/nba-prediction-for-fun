@@ -12,14 +12,14 @@ export default function LoginPage() {
       <div className="absolute -bottom-40 -right-40 h-96 w-96 rounded-full bg-blue-500/10 blur-3xl" />
 
       {/* Card */}
-      <div className="relative z-10 mx-4 flex w-full max-w-md flex-col items-center rounded-2xl border border-white/10 bg-white/5 p-10 shadow-2xl backdrop-blur-xl">
+      <div className="relative z-10 mx-4 flex w-full max-w-md flex-col items-center rounded-2xl border border-white/10 bg-white/5 p-6 shadow-2xl backdrop-blur-xl sm:p-10">
         {/* Logo */}
-        <div className="mb-6 flex h-20 w-20 items-center justify-center rounded-2xl bg-gradient-to-br from-orange-500 to-orange-600 shadow-lg shadow-orange-500/25">
-          <Trophy className="h-10 w-10 text-white" />
+        <div className="mb-6 flex h-16 w-16 items-center justify-center rounded-2xl bg-gradient-to-br from-orange-500 to-orange-600 shadow-lg shadow-orange-500/25 sm:h-20 sm:w-20">
+          <Trophy className="h-8 w-8 text-white sm:h-10 sm:w-10" />
         </div>
 
         {/* Title */}
-        <h1 className="mb-1 text-3xl font-bold tracking-tight text-white">
+        <h1 className="mb-1 text-2xl font-bold tracking-tight text-white sm:text-3xl">
           Welcome Back 老哥们!
         </h1>
         <p className="mb-2 text-lg text-orange-400">

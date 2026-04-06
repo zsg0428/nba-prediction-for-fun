@@ -25,9 +25,18 @@ export default async function PredictionsPage() {
   await init();
 
   const today = format(new Date().toLocaleString("en-US", { timeZone: "America/New_York" }), "yyyy-MM-dd");
-  const todaysGames = await fetchGamesInSingleDay(today);
 
-  const allGames = await fetchGames(); // all games starting from 2025-04-07
+  const emptyResponse = { data: [], meta: {} };
+  let todaysGames;
+  let allGames;
+  try {
+    todaysGames = await fetchGamesInSingleDay(today);
+    allGames = await fetchGames();
+  } catch (e) {
+    console.error("Failed to fetch games from API (rate limited?):", e);
+    todaysGames = emptyResponse;
+    allGames = emptyResponse;
+  }
 
   const dbGames = await fetchAllGamesFromDb();
   const roundMap = Object.fromEntries(

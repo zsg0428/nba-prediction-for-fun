@@ -166,36 +166,40 @@ export const fetchFinishedGamesSince = async (date: Date) => {
 };
 
 export const refreshGamesWithinOneMonth = async () => {
-  const today = format(new Date(), "yyyy-MM-dd");
-  const oneMonthFromToday = format(
-    new Date(new Date().setMonth(new Date().getMonth() + 1)),
-    "yyyy-MM-dd",
-  );
+  try {
+    const today = format(new Date(), "yyyy-MM-dd");
+    const oneMonthFromToday = format(
+      new Date(new Date().setMonth(new Date().getMonth() + 1)),
+      "yyyy-MM-dd",
+    );
 
-  const allGames = await fetchGamesWithinDayRange(
-    today,
-    oneMonthFromToday,
-  );
+    const allGames = await fetchGamesWithinDayRange(
+      today,
+      oneMonthFromToday,
+    );
 
-  for (const game of allGames.data as (NBAGame & { datetime: string })[]) {
-    await prisma.game.upsert({
-      where: {
-        apiGameId: game.id,
-      },
-      update: {
-        homeTeam: game.home_team.name,
-        awayTeam: game.visitor_team.name,
-        startTime: new Date(game.datetime),
-        isPlayoff: game.postseason,
-      },
-      create: {
-        apiGameId: game.id,
-        homeTeam: game.home_team.name,
-        awayTeam: game.visitor_team.name,
-        startTime: new Date(game.datetime),
-        isPlayoff: game.postseason,
-      },
-    });
+    for (const game of allGames.data as (NBAGame & { datetime: string })[]) {
+      await prisma.game.upsert({
+        where: {
+          apiGameId: game.id,
+        },
+        update: {
+          homeTeam: game.home_team.name,
+          awayTeam: game.visitor_team.name,
+          startTime: new Date(game.datetime),
+          isPlayoff: game.postseason,
+        },
+        create: {
+          apiGameId: game.id,
+          homeTeam: game.home_team.name,
+          awayTeam: game.visitor_team.name,
+          startTime: new Date(game.datetime),
+          isPlayoff: game.postseason,
+        },
+      });
+    }
+  } catch (e) {
+    console.error("Failed to refresh games from API (rate limited?):", e);
   }
 }
 

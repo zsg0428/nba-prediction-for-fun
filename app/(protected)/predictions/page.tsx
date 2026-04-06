@@ -37,28 +37,28 @@ export default async function PredictionsPage() {
   const todayGames = todaysDbGames.map(dbGameToGame);
   const allGames = upcomingDbGames.map(dbGameToGame);
 
-  const currentUserGueeses = await fetchCurrentUserGueeses();
+  const currentUserGuesses = await fetchCurrentUserGuesses();
   const allOtherUserGuesses = await fetchAllUserGuesses();
 
   return (
     <PredictionsDashboard
-      todaysGames={{ data: todayGames, meta: {} }}
-      allGames={{ data: allGames, meta: {} }}
-      currentUserGueeses={currentUserGueeses}
+      todaysGames={todayGames}
+      allGames={allGames}
+      currentUserGuesses={currentUserGuesses}
       allOtherGameGuesses={allOtherUserGuesses}
     />
   );
 }
 
 
-const fetchCurrentUserGueeses = async () => {
+const fetchCurrentUserGuesses = async () => {
   const userId = await getCurrentUserId();
   const currentUserPredictions = await fetchUsersPredictions(userId);
-  const currentUserGueeses = Object.fromEntries(
+  const currentUserGuesses = Object.fromEntries(
     currentUserPredictions.map((p) => [p.game.apiGameId, p.predictedTeam]),
   );
 
-  return currentUserGueeses;
+  return currentUserGuesses;
 }
 
 const fetchAllUserGuesses = async () => {

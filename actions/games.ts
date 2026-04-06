@@ -6,16 +6,13 @@ import { prisma } from "@/lib/db";
 import { api } from "@/lib/nbaApi";
 import { NBAGame } from "@balldontlie/sdk";
 
-// https://docs.balldontlie.io/?javascript#get-all-games   API doc
 export const fetchGames = async () => {
   const today = format(new Date(), "yyyy-MM-dd");
   const allGames = await api.nba.getGames({
-    // postseason: true,
     seasons: [2025],
     per_page: 100,
     start_date: today,
   });
-  // console.log(allGames);
   return allGames;
 };
 
@@ -275,25 +272,21 @@ export const refreshGameRounds = async () => {
     }
   }
 
-  // console.log("teamToMatchupMap", teamToMatchupMap);
-
-  // Assign rounds to unassinged games based on matchups
   const unassignedGames = sortedPlayoffGamesByStartTime.filter((game) => !game.roundId);
   for (const game of unassignedGames) {
-    const homeTeam = game.homeTeam;
-    const awayTeam = game.awayTeam;
+    const homeTeamMatchups = teamToMatchupMap.get(game.homeTeam);
+    const awayTeamMatchups = teamToMatchupMap.get(game.awayTeam);
 
-    const homeTeamMatchups = teamToMatchupMap.get(homeTeam);
-    const awayTeamMatchups = teamToMatchupMap.get(awayTeam);
+    const homeIndex = homeTeamMatchups?.indexOf(game.awayTeam) ?? -1;
+    const awayIndex = awayTeamMatchups?.indexOf(game.homeTeam) ?? -1;
 
-    if (homeTeamMatchups?.indexOf(awayTeam) !== undefined && homeTeamMatchups?.indexOf(awayTeam) === awayTeamMatchups?.indexOf(homeTeam)) {
-      const roundIndex = homeTeamMatchups?.indexOf(awayTeam);
-      const roundName = indexedRounds[roundIndex!];
+    if (homeIndex !== -1 && homeIndex === awayIndex) {
+      const roundName = indexedRounds[homeIndex];
+      if (!roundName) continue;
       try {
         await assignGameToRound(game.apiGameId, roundName);
-        console.log(`✅ Assigned game ${game.homeTeam} (Home) vs ${game.awayTeam} (Away) on ${game.startTime} to round ${roundName}`);  
       } catch (e) {
-        console.error(`❌ Failed to assign game ${game.homeTeam} (Home) vs ${game.awayTeam} (Away) on ${game.startTime} to round ${roundName}`, e);
+        console.error(`Failed to assign round for ${game.homeTeam} vs ${game.awayTeam}:`, e);
       }
     }
   }

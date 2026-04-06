@@ -1,4 +1,3 @@
-// app/predictions/page.tsx
 "use client";
 
 import { useState } from "react";
@@ -10,30 +9,23 @@ import { toast } from "sonner";
 import { Separator } from "@/components/ui/separator";
 import AllGamesSection from "@/components/Games/AllGamesSection";
 import TodaysGamesSection from "@/components/Games/TodaysGameSection";
+import { Game } from "@/types/IGames";
 import { PredictionMap } from "@/types/IPredictions";
 
 type PredictionsDashboardProps = {
-  todaysGames: {
-    data: any[];
-    meta: Record<string, any>;
-  };
-  allGames: {
-    data: any[];
-    meta: Record<string, any>;
-  };
-  currentUserGueeses: Record<number, string>;
+  todaysGames: Game[];
+  allGames: Game[];
+  currentUserGuesses: Record<number, string>;
   allOtherGameGuesses: PredictionMap;
 };
 
 export default function PredictionsDashboard({
   todaysGames,
   allGames,
-  currentUserGueeses,
+  currentUserGuesses,
   allOtherGameGuesses,
 }: PredictionsDashboardProps) {
-  // console.log(allGamesData);
-
-  const [guesses, setGuesses] = useState<Record<number, string>>(currentUserGueeses);
+  const [guesses, setGuesses] = useState<Record<number, string>>(currentUserGuesses);
 
   const handleGuess = async (gameApiId: number, team: string) => {
     const userId = await getCurrentUserId();
@@ -60,15 +52,14 @@ export default function PredictionsDashboard({
 
       {/* Today’s Games */}
       <TodaysGamesSection
-        games={todaysGames.data}
+        games={todaysGames}
         guesses={guesses}
         onGuess={handleGuess}
         allOtherGameGuesses={allOtherGameGuesses}
       />
       <Separator />
-      {/* All Games */}
       <AllGamesSection
-        games={allGames.data}
+        games={allGames}
         guesses={guesses}
         onGuess={handleGuess}
       />

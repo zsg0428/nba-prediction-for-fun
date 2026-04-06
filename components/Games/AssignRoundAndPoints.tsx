@@ -38,14 +38,14 @@ export const AssignRoundAndPoints = ({ gameId, onSubmit }: AssignProps) => {
   const [loading, setLoading] = useState<boolean>(false);
 
   const router = useRouter();
-  if (user?.role !== "ADMIN") return null;
+  if (user?.role !== Role.ADMIN) return null;
 
   const handleSubmit = () => {
     setLoading(true);
     try {
       onSubmit(gameId, selectedRound);
     } catch (e) {
-      console.error("assigning failed");
+      console.error("Assigning round failed:", e);
     } finally {
       setLoading(false);
       router.refresh();
@@ -57,7 +57,7 @@ export const AssignRoundAndPoints = ({ gameId, onSubmit }: AssignProps) => {
       await removeRoundFromGame(gameId);
       toast.success("Remove game from round succesfully");
     } catch (e) {
-      console.error("failed to remove this game rounrd");
+      console.error("Failed to remove game round:", e);
       toast.error("Failed to remove this game");
     } finally {
       router.refresh();

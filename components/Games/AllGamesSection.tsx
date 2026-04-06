@@ -1,17 +1,14 @@
 "use client";
 
 import { useState } from "react";
-import { useRouter } from "next/router";
 import { assignGameToRound } from "@/actions/games";
-import { format } from "date-fns";
 import { toast } from "sonner";
 
 import { Button } from "@/components/ui/button";
-import { Card, CardContent } from "@/components/ui/card";
+import { Card } from "@/components/ui/card";
 import { AssignRoundAndPoints } from "@/components/Games/AssignRoundAndPoints";
 import { Game } from "@/types/IGames";
 import { GameCard } from "../Predicitions/GameCard";
-
 
 type Props = {
   games: Game[];
@@ -19,17 +16,16 @@ type Props = {
   onGuess: (gameApiId: number, team: string) => void;
 };
 
-type GroupedGames = {
-  [date: string]: any[];
-};
+type GroupedGames = Record<string, Game[]>;
 
 export default function AllGamesSection({
   games,
   onGuess,
   guesses,
 }: Props) {
-  const [visibleDates, setVisibleDates] = useState(3); // show 3 days initially
-  const groupGamesByDate = (games: any[]): GroupedGames => {
+  const [visibleDates, setVisibleDates] = useState(3);
+
+  const groupGamesByDate = (games: Game[]): GroupedGames => {
     return games.reduce((groups: GroupedGames, game) => {
       const date = game.date;
       if (!groups[date]) groups[date] = [];
@@ -38,8 +34,8 @@ export default function AllGamesSection({
     }, {});
   };
 
-  const groupeGames = groupGamesByDate(games);
-  const dateKeys = Object.keys(groupeGames).sort(); // ascending order
+  const groupedGames = groupGamesByDate(games);
+  const dateKeys = Object.keys(groupedGames).sort();
 
   const handleAssignRound = async (gameApiId: number, roundName: string) => {
     try {
@@ -58,7 +54,7 @@ export default function AllGamesSection({
         <div key={date} className="space-y-3">
           <h3 className="text-xl font-bold text-primary">{date}</h3>
           <div className="grid gap-4 sm:grid-cols-2">
-            {groupeGames[date].map((game) => (
+            {groupedGames[date].map((game) => (
               <Card key={game.id}>
                 <GameCard
                   game={game}

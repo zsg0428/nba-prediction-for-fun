@@ -234,11 +234,12 @@ export const fetchTodaysGamesFromDb = async (todayStr: string) => {
   });
 };
 
-export const fetchUpcomingGamesFromDb = async () => {
+export const fetchUpcomingGamesFromDb = async (todayStr: string) => {
+  const endOfToday = new Date(`${todayStr}T23:59:59.999Z`);
   return await prisma.game.findMany({
     where: {
       startTime: {
-        gt: new Date(),
+        gt: endOfToday,
       },
     },
     include: { round: true },

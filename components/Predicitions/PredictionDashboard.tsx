@@ -5,7 +5,13 @@ import { fetchSingleGameIdAndIfStarted } from "@/actions/games";
 import { upsertPrediction } from "@/actions/prediction";
 import { getCurrentUserId } from "@/actions/user";
 import { toast } from "sonner";
+import { Info } from "lucide-react";
 
+import {
+  Popover,
+  PopoverContent,
+  PopoverTrigger,
+} from "@/components/ui/popover";
 import AllGamesSection from "@/components/Games/AllGamesSection";
 import TodaysGamesSection from "@/components/Games/TodaysGameSection";
 import { Game } from "@/types/IGames";
@@ -48,6 +54,28 @@ export default function PredictionsDashboard({
           Make your picks and earn points!
         </p>
       </div>
+
+      {/* Floating Rules FAB */}
+      <Popover>
+        <PopoverTrigger asChild>
+          <button className="fixed bottom-6 right-6 z-50 flex h-12 w-12 cursor-pointer items-center justify-center rounded-full bg-primary text-primary-foreground shadow-lg shadow-primary/25 transition-all hover:scale-105 hover:shadow-xl">
+            <Info className="h-5 w-5" />
+          </button>
+        </PopoverTrigger>
+        <PopoverContent align="end" side="top" className="w-64">
+          <div className="space-y-2">
+            <h4 className="text-sm font-semibold">Scoring Rules</h4>
+            <ul className="space-y-1.5 text-sm text-muted-foreground">
+              <li className="flex justify-between"><span>Play In</span><span className="font-medium text-foreground">1 pt</span></li>
+              <li className="flex justify-between"><span>First Round</span><span className="font-medium text-foreground">1.5 pts</span></li>
+              <li className="flex justify-between"><span>Conf. Semifinals</span><span className="font-medium text-foreground">2 pts</span></li>
+              <li className="flex justify-between"><span>Conf. Finals</span><span className="font-medium text-foreground">3 pts</span></li>
+              <li className="flex justify-between"><span>Finals</span><span className="font-medium text-foreground">5 pts</span></li>
+            </ul>
+            <p className="text-xs text-muted-foreground">Predictions lock when the game starts.</p>
+          </div>
+        </PopoverContent>
+      </Popover>
 
       {/* Today's Games */}
       <TodaysGamesSection

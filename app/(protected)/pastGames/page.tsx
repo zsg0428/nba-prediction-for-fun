@@ -1,13 +1,8 @@
 import { fetchFinishedGamesSince } from "@/actions/games";
-import { refreshPredictions } from "@/actions/prediction";
 
 import PastGamesSection from "@/components/Games/PastGamesSection";
-import { Game } from "@/types/IGames";
-import { NBAGame } from "@balldontlie/sdk";
 
 export default async function PredictionPage() {
-  await refreshPredictions();
-  
   const today = new Date();
   const pastOneWeek = new Date(today.setDate(today.getDate() - 7));
   const finishedGames = await fetchFinishedGamesSince(pastOneWeek);

@@ -1,69 +1,49 @@
 
 import { format } from "date-fns";
+import { formatInTimeZone } from "date-fns-tz";
 
 import PredictionsDashboard from "@/components/Predicitions/PredictionDashboard";
 import { getCurrentUserId } from "@/actions/user";
 import {
-  fetchAllGamesFromDb,
-  fetchGames,
-  fetchGamesInSingleDay,
-  refreshGamesWithinOneMonth,
-  refreshGameRounds,
+  fetchTodaysGamesFromDb,
+  fetchUpcomingGamesFromDb,
 } from "@/actions/games";
-import { fetchUsersPredictions, fetchAllPredictions, refreshPredictions } from "@/actions/prediction";
+import { fetchUsersPredictions, fetchAllPredictions } from "@/actions/prediction";
 import { PredictionMap } from "@/types/IPredictions";
-import { NBAGame } from "@balldontlie/sdk";
+import { Game } from "@/types/IGames";
 
-const init = async () => {
-  // Fetch any required data or state here
-  await refreshGamesWithinOneMonth();
-  await refreshGameRounds();
-  await refreshPredictions();
+// Convert DB game to the Game type that components expect
+function dbGameToGame(dbGame: any): Game {
+  return {
+    id: dbGame.apiGameId,
+    date: format(dbGame.startTime, "yyyy-MM-dd"),
+    datetime: dbGame.startTime.toISOString(),
+    status: dbGame.status ?? "Scheduled",
+    home_team: { name: dbGame.homeTeam },
+    home_team_score: dbGame.homeTeamScore ?? 0,
+    visitor_team: { name: dbGame.awayTeam },
+    visitor_team_score: dbGame.awayTeamScore ?? 0,
+    round: dbGame.round?.name ?? null,
+    time: "",
+  };
 }
 
-export default async function PredictionsPage() { 
-  await init();
+export default async function PredictionsPage() {
+  const today = formatInTimeZone(new Date(), "America/New_York", "yyyy-MM-dd");
 
-  const today = format(new Date().toLocaleString("en-US", { timeZone: "America/New_York" }), "yyyy-MM-dd");
+  const todaysDbGames = await fetchTodaysGamesFromDb(today);
+  const upcomingDbGames = await fetchUpcomingGamesFromDb();
 
-  const emptyResponse = { data: [], meta: {} };
-  let todaysGames;
-  let allGames;
-  try {
-    todaysGames = await fetchGamesInSingleDay(today);
-    allGames = await fetchGames();
-  } catch (e) {
-    console.error("Failed to fetch games from API (rate limited?):", e);
-    todaysGames = emptyResponse;
-    allGames = emptyResponse;
-  }
-
-  const dbGames = await fetchAllGamesFromDb();
-  const roundMap = Object.fromEntries(
-    dbGames.map((g) => [String(g.apiGameId), g.round?.name ?? null]),
-  );
-
-  const allGamesWithRound = allGames.data.map((game) => ({
-    ...game,
-    round: roundMap[String(game.id)] ?? null,
-  }));
-
-  const todayGamesWithRound = (todaysGames.data as (NBAGame & { datetime: string })[]).map((game) => ({
-    ...game,
-    round: roundMap[String(game.id)] ?? null,
-  })).sort((a, b) => {
-    const datetimeA = new Date(a.datetime);
-    const datetimeB = new Date(b.datetime);
-    return datetimeA.getTime() - datetimeB.getTime();
-  });
+  const todayGames = todaysDbGames.map(dbGameToGame);
+  const allGames = upcomingDbGames.map(dbGameToGame);
 
   const currentUserGueeses = await fetchCurrentUserGueeses();
   const allOtherUserGuesses = await fetchAllUserGuesses();
 
   return (
     <PredictionsDashboard
-      todaysGames={{ data: todayGamesWithRound, meta: todaysGames.meta ?? {} }}
-      allGames={{ data: allGamesWithRound, meta: allGames.meta ?? {} }}
+      todaysGames={{ data: todayGames, meta: {} }}
+      allGames={{ data: allGames, meta: {} }}
       currentUserGueeses={currentUserGueeses}
       allOtherGameGuesses={allOtherUserGuesses}
     />

@@ -167,14 +167,17 @@ export const fetchFinishedGamesSince = async (date: Date) => {
 
 export const refreshGamesWithinOneMonth = async () => {
   try {
-    const today = format(new Date(), "yyyy-MM-dd");
+    const threeDaysAgo = format(
+      new Date(Date.now() - 3 * 24 * 60 * 60 * 1000),
+      "yyyy-MM-dd",
+    );
     const oneMonthFromToday = format(
       new Date(new Date().setMonth(new Date().getMonth() + 1)),
       "yyyy-MM-dd",
     );
 
     const allGames = await fetchGamesWithinDayRange(
-      today,
+      threeDaysAgo,
       oneMonthFromToday,
     );
 

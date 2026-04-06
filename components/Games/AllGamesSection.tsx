@@ -3,6 +3,7 @@
 import { useState } from "react";
 import { assignGameToRound } from "@/actions/games";
 import { toast } from "sonner";
+import { CalendarDays } from "lucide-react";
 
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
@@ -40,52 +41,78 @@ export default function AllGamesSection({
   const handleAssignRound = async (gameApiId: number, roundName: string) => {
     try {
       await assignGameToRound(gameApiId, roundName);
-      toast.success("Assign points successful");
+      toast.success("Round assigned");
     } catch (e) {
-      toast.error("assign round and points failed");
+      toast.error("Failed to assign round");
     }
   };
 
   return (
     <section className="space-y-6">
-      <h2 className="mb-4 text-center text-2xl font-semibold">All Games</h2>
+      <div className="flex items-center gap-2">
+        <CalendarDays className="h-5 w-5 text-accent" />
+        <h2 className="text-xl font-bold">Upcoming Games</h2>
+        <span className="rounded-full bg-muted px-2 py-0.5 text-xs font-medium text-muted-foreground">
+          {games.length}
+        </span>
+      </div>
 
-      {dateKeys.slice(0, visibleDates).map((date) => (
-        <div key={date} className="space-y-3">
-          <h3 className="text-xl font-bold text-primary">{date}</h3>
-          <div className="grid gap-4 sm:grid-cols-2">
-            {groupedGames[date].map((game) => (
-              <Card key={game.id}>
-                <GameCard
-                  game={game}
-                  predictedTeam={guesses[game.id] ?? ""}
-                  onGuess={(gameId, team) => onGuess(gameId, team)}
-                  allOtherGameGuesses={undefined}
-                />
-                <AssignRoundAndPoints
-                  gameId={game.id}
-                  onSubmit={(gameId, round) =>
-                    handleAssignRound(gameId as number, round)
-                  }
-                />
-              </Card>
-            ))}
+      <div className="space-y-6">
+        {dateKeys.slice(0, visibleDates).map((date) => (
+          <div key={date} className="space-y-3">
+            <div className="sticky top-16 z-10 flex items-center gap-2 bg-background/80 py-2 backdrop-blur-sm">
+              <span className="rounded-full bg-accent/10 px-3 py-1 text-sm font-semibold text-accent">
+                {date}
+              </span>
+              <span className="text-xs text-muted-foreground">
+                {groupedGames[date].length} game{groupedGames[date].length > 1 ? "s" : ""}
+              </span>
+            </div>
+            <div className="grid gap-4 sm:grid-cols-2">
+              {groupedGames[date].map((game) => (
+                <Card
+                  key={game.id}
+                  className="overflow-hidden transition-all duration-200 hover:-translate-y-0.5 hover:shadow-lg"
+                >
+                  <GameCard
+                    game={game}
+                    predictedTeam={guesses[game.id] ?? ""}
+                    onGuess={(gameId, team) => onGuess(gameId, team)}
+                    allOtherGameGuesses={undefined}
+                  />
+                  <AssignRoundAndPoints
+                    gameId={game.id}
+                    onSubmit={(gameId, round) =>
+                      handleAssignRound(gameId as number, round)
+                    }
+                  />
+                </Card>
+              ))}
+            </div>
           </div>
-        </div>
-      ))}
+        ))}
+      </div>
 
-      {/* Load More */}
-      {visibleDates < dateKeys.length ? (
-        <div className="pt-4 text-center">
-          <Button onClick={() => setVisibleDates((v) => v + 3)}>
+      {/* Load More / Less */}
+      <div className="flex justify-center pt-2">
+        {visibleDates < dateKeys.length ? (
+          <Button
+            variant="outline"
+            onClick={() => setVisibleDates((v) => v + 3)}
+            className="cursor-pointer"
+          >
             Load More
           </Button>
-        </div>
-      ) : (
-        <div className="pt-4 text-center">
-          <Button onClick={() => setVisibleDates(3)}>Load Less</Button>
-        </div>
-      )}
+        ) : dateKeys.length > 3 ? (
+          <Button
+            variant="ghost"
+            onClick={() => setVisibleDates(3)}
+            className="cursor-pointer text-muted-foreground"
+          >
+            Show Less
+          </Button>
+        ) : null}
+      </div>
     </section>
   );
 }

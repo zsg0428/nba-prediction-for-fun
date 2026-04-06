@@ -6,7 +6,6 @@ import { upsertPrediction } from "@/actions/prediction";
 import { getCurrentUserId } from "@/actions/user";
 import { toast } from "sonner";
 
-import { Separator } from "@/components/ui/separator";
 import AllGamesSection from "@/components/Games/AllGamesSection";
 import TodaysGamesSection from "@/components/Games/TodaysGameSection";
 import { Game } from "@/types/IGames";
@@ -34,35 +33,38 @@ export default function PredictionsDashboard({
     if (!started) {
       await upsertPrediction({ userId, gameId, predictedTeam: team });
       setGuesses((prev) => ({ ...prev, [gameApiId]: team }));
-      toast.success(`Updated prediction to ${team}, good luck!`);
+      toast.success(`Locked in ${team}!`);
     } else {
-      toast.error("Game has started, you cannot update prediction anymore!");
+      toast.error("Game has started, predictions are locked!");
     }
   };
 
   return (
-    <main className="mx-auto max-w-4xl space-y-10 px-4 py-8">
-      {/* Heading */}
-      <div>
-        <h1 className="mb-2 text-3xl font-bold text-primary">🏀 Predictions</h1>
+    <main className="mx-auto max-w-5xl space-y-8 px-4 py-8">
+      {/* Header */}
+      <div className="space-y-1">
+        <h1 className="text-3xl font-bold tracking-tight">Predictions</h1>
         <p className="text-muted-foreground">
           Make your picks and earn points!
         </p>
       </div>
 
-      {/* Today’s Games */}
+      {/* Today's Games */}
       <TodaysGamesSection
         games={todaysGames}
         guesses={guesses}
         onGuess={handleGuess}
         allOtherGameGuesses={allOtherGameGuesses}
       />
-      <Separator />
-      <AllGamesSection
-        games={allGames}
-        guesses={guesses}
-        onGuess={handleGuess}
-      />
+
+      {/* Upcoming Games */}
+      {allGames.length > 0 && (
+        <AllGamesSection
+          games={allGames}
+          guesses={guesses}
+          onGuess={handleGuess}
+        />
+      )}
     </main>
   );
 }

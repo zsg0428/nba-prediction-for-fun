@@ -11,6 +11,10 @@ const nextConfig = {
         protocol: "https",
         hostname: "randomuser.me",
       },
+      {
+        protocol: "https",
+        hostname: "cdn.nba.com",
+      },
     ],
   },
   serverExternalPackages: ["@prisma/client"],

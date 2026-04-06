@@ -1,9 +1,10 @@
-// components/predictions/GameCard.tsx
 "use client";
 
+import Image from "next/image";
 import { Button } from "@/components/ui/button";
 import { CardContent } from "@/components/ui/card";
 import { formatInTimeZone } from "date-fns-tz";
+import { getTeamLogoUrl } from "@/constants/teams";
 
 import { Game } from "@/types/IGames";
 import { PredictionMap } from "@/types/IPredictions";
@@ -13,6 +14,20 @@ interface GameCardProps {
   predictedTeam: string;
   onGuess: (gameApiId: number, team: string) => void;
   allOtherGameGuesses?: PredictionMap;
+}
+
+function TeamLogo({ teamName }: { teamName: string }) {
+  const logoUrl = getTeamLogoUrl(teamName);
+  if (!logoUrl) return null;
+  return (
+    <Image
+      src={logoUrl}
+      alt={teamName}
+      width={32}
+      height={32}
+      className="inline-block"
+    />
+  );
 }
 
 export const GameCard = ({ game, predictedTeam, onGuess, allOtherGameGuesses }: GameCardProps) => {
@@ -27,29 +42,37 @@ export const GameCard = ({ game, predictedTeam, onGuess, allOtherGameGuesses }: 
           : "🗓️ Scheduled"}
       </div>
       <div className="text-sm text-muted-foreground">
-        {formatInTimeZone(new Date(game.datetime),  'America/New_York', "PPp")}
+        {formatInTimeZone(new Date(game.datetime), "America/New_York", "PPp")}
       </div>
       <div className="text-sm text-muted-foreground">
         Home | Away
       </div>
-      <div className="text-lg font-semibold">
-        {game.home_team.name} vs {game.visitor_team.name}
-      </div>
-      <div className="text-lg font-semibold">
-        {game.home_team_score} : {game.visitor_team_score}
+      <div className="flex items-center justify-center gap-6 text-lg font-semibold">
+        <div className="flex flex-col items-center gap-1">
+          <TeamLogo teamName={game.home_team.name} />
+          <span className="text-sm">{game.home_team.name}</span>
+        </div>
+        <div className="flex flex-col items-center">
+          <span className="text-xl">{game.home_team_score} : {game.visitor_team_score}</span>
+          <span className="text-xs text-muted-foreground">vs</span>
+        </div>
+        <div className="flex flex-col items-center gap-1">
+          <TeamLogo teamName={game.visitor_team.name} />
+          <span className="text-sm">{game.visitor_team.name}</span>
+        </div>
       </div>
       <div className="flex gap-3">
         Your Choice:
-      </div>             
+      </div>
       <div className="flex gap-3">
         {[game.home_team.name, game.visitor_team.name].map((team) => (
           <Button
             key={team}
-            variant={
-              predictedTeam === team ? "default" : "outline"
-            }
+            variant={predictedTeam === team ? "default" : "outline"}
+            className="flex items-center gap-2"
             onClick={() => onGuess(game.id, team)}
           >
+            <TeamLogo teamName={team} />
             {team}
           </Button>
         ))}

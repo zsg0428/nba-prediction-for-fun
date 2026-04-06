@@ -9,7 +9,7 @@ interface GameParam {
   gameId: number;
   homeTeam: string;
   awayTeam: string;
-  startTime: string; // ISO stirng
+  startTime: string;
   roundId: string;
 }
 
@@ -82,12 +82,11 @@ export const refreshPredictions = async () => {
   
         await updateGameWinnerTeam(pendingGame.id, winnerTeam);
         await upsertPredictionResult(pendingGame.id, winnerTeam);
-        console.log(`✅ Updated game ${pendingGame.apiGameId} with winner ${winnerTeam}`);
+        console.log(`Updated game ${pendingGame.apiGameId} with winner ${winnerTeam}`);
       }
     }
     catch (error) {
-      await updateGameWinnerTeam(pendingGame.id, "No");
-      console.error(`❌ Failed to fetch game ${pendingGame.apiGameId}:`, error);
+      console.error(`Failed to fetch game ${pendingGame.apiGameId}:`, error);
     }
   }
 };

@@ -1,6 +1,6 @@
 /** @type {import("next").NextConfig} */
 const nextConfig = {
-  reactStrictMode: false,
+  reactStrictMode: true,
   images: {
     remotePatterns: [
       {
@@ -14,14 +14,6 @@ const nextConfig = {
     ],
   },
   serverExternalPackages: ["@prisma/client"],
-  async rewrites() {
-    return [
-      {
-        source: "/api/:path*",
-        destination: "/api/:path*",
-      },
-    ];
-  },
 };
 
 module.exports = nextConfig;

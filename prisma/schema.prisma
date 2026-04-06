@@ -44,7 +44,7 @@ model Game {
   roundId        String?
   predictions    Prediction[]
   createdAt      DateTime     @default(now())
-  isPlayoff      Boolean?
+  isPlayoff      Boolean      @default(false)
 }
 
 model Prediction {

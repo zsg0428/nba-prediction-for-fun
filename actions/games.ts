@@ -11,7 +11,7 @@ export const fetchGames = async () => {
   const today = format(new Date(), "yyyy-MM-dd");
   const allGames = await api.nba.getGames({
     // postseason: true,
-    seasons: [2024],
+    seasons: [2025],
     per_page: 100,
     start_date: today,
   });
@@ -21,7 +21,7 @@ export const fetchGames = async () => {
 
 export const fetchGamesWithinDayRange = async (startDate: string, endDate: string) => {
   const todaysGames = await api.nba.getGames({
-    seasons: [2024],
+    seasons: [2025],
     per_page: 100,
     start_date: startDate,
     end_date: endDate,
@@ -31,7 +31,7 @@ export const fetchGamesWithinDayRange = async (startDate: string, endDate: strin
 
 export const fetchGamesInSingleDay = async (date: string) => {
   const todaysGames = await api.nba.getGames({
-    seasons: [2024],
+    seasons: [2025],
     per_page: 20,
     start_date: date,
     end_date: date,
@@ -166,38 +166,85 @@ export const fetchFinishedGamesSince = async (date: Date) => {
 };
 
 export const refreshGamesWithinOneMonth = async () => {
-  const today = format(new Date(), "yyyy-MM-dd");
-  const oneMonthFromToday = format(
-    new Date(new Date().setMonth(new Date().getMonth() + 1)),
-    "yyyy-MM-dd",
-  );
+  try {
+    const today = format(new Date(), "yyyy-MM-dd");
+    const oneMonthFromToday = format(
+      new Date(new Date().setMonth(new Date().getMonth() + 1)),
+      "yyyy-MM-dd",
+    );
 
-  const allGames = await fetchGamesWithinDayRange(
-    today,
-    oneMonthFromToday,
-  );
+    const allGames = await fetchGamesWithinDayRange(
+      today,
+      oneMonthFromToday,
+    );
 
-  for (const game of allGames.data as (NBAGame & { datetime: string })[]) {
-    await prisma.game.upsert({
-      where: {
-        apiGameId: game.id,
-      },
-      update: {
-        homeTeam: game.home_team.name,
-        awayTeam: game.visitor_team.name,
-        startTime: new Date(game.datetime),
-        isPlayoff: game.postseason,
-      },
-      create: {
-        apiGameId: game.id,
-        homeTeam: game.home_team.name,
-        awayTeam: game.visitor_team.name,
-        startTime: new Date(game.datetime),
-        isPlayoff: game.postseason,
-      },
-    });
+    for (const game of allGames.data as (NBAGame & { datetime: string })[]) {
+      const isFinished = game.status === "Final";
+      const winnerTeam = isFinished
+        ? game.home_team_score > game.visitor_team_score
+          ? game.home_team.name
+          : game.visitor_team.name
+        : undefined;
+
+      await prisma.game.upsert({
+        where: {
+          apiGameId: game.id,
+        },
+        update: {
+          homeTeam: game.home_team.name,
+          awayTeam: game.visitor_team.name,
+          startTime: new Date(game.datetime),
+          isPlayoff: game.postseason,
+          homeTeamScore: game.home_team_score ?? null,
+          awayTeamScore: game.visitor_team_score ?? null,
+          status: isNaN(new Date(game.status).getTime()) ? game.status : "Scheduled",
+          ...(winnerTeam ? { winnerTeam } : {}),
+        },
+        create: {
+          apiGameId: game.id,
+          homeTeam: game.home_team.name,
+          awayTeam: game.visitor_team.name,
+          startTime: new Date(game.datetime),
+          isPlayoff: game.postseason,
+          homeTeamScore: game.home_team_score ?? null,
+          awayTeamScore: game.visitor_team_score ?? null,
+          status: isNaN(new Date(game.status).getTime()) ? game.status : "Scheduled",
+          ...(winnerTeam ? { winnerTeam } : {}),
+        },
+      });
+    }
+  } catch (e) {
+    console.error("Failed to refresh games from API (rate limited?):", e);
   }
 }
+
+export const fetchTodaysGamesFromDb = async (todayStr: string) => {
+  const startOfDay = new Date(`${todayStr}T00:00:00.000Z`);
+  const endOfDay = new Date(`${todayStr}T23:59:59.999Z`);
+
+  return await prisma.game.findMany({
+    where: {
+      startTime: {
+        gte: startOfDay,
+        lte: endOfDay,
+      },
+    },
+    include: { round: true },
+    orderBy: { startTime: "asc" },
+  });
+};
+
+export const fetchUpcomingGamesFromDb = async () => {
+  return await prisma.game.findMany({
+    where: {
+      startTime: {
+        gt: new Date(),
+      },
+    },
+    include: { round: true },
+    orderBy: { startTime: "asc" },
+  });
+};
 
 export const refreshGameRounds = async () => {
   const sortedPlayoffGamesByStartTime = await fetchAllSortedPlayoffGamesFromDb();

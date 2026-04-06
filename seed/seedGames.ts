@@ -7,6 +7,13 @@ export const seedGames = async () => {
   const allGames = await fetchGames();
 
   for (const game of allGames.data as (NBAGame & { datetime: string })[]) {
+    const isFinished = game.status === "Final";
+    const winnerTeam = isFinished
+      ? game.home_team_score > game.visitor_team_score
+        ? game.home_team.name
+        : game.visitor_team.name
+      : undefined;
+
     await prisma.game.upsert({
       where: {
         apiGameId: game.id,
@@ -16,6 +23,10 @@ export const seedGames = async () => {
         awayTeam: game.visitor_team.name,
         startTime: new Date(game.datetime),
         isPlayoff: game.postseason,
+        homeTeamScore: game.home_team_score ?? null,
+        awayTeamScore: game.visitor_team_score ?? null,
+        status: isNaN(new Date(game.status).getTime()) ? game.status : "Scheduled",
+        ...(winnerTeam ? { winnerTeam } : {}),
       },
       create: {
         apiGameId: game.id,
@@ -23,6 +34,10 @@ export const seedGames = async () => {
         awayTeam: game.visitor_team.name,
         startTime: new Date(game.datetime),
         isPlayoff: game.postseason,
+        homeTeamScore: game.home_team_score ?? null,
+        awayTeamScore: game.visitor_team_score ?? null,
+        status: isNaN(new Date(game.status).getTime()) ? game.status : "Scheduled",
+        ...(winnerTeam ? { winnerTeam } : {}),
       },
     });
   }

@@ -16,7 +16,7 @@ import {
 import { SignoutButton } from "@/components/Signout/SignoutButton";
 import { ThemeToggler } from "@/components/ThemeToggler/ThemeToggler";
 
-export const NavBar = ({ session }: { session: Session | null }) => {
+export const NavBar = ({ session, isAdmin }: { session: Session | null; isAdmin?: boolean }) => {
   const [mobileOpen, setMobileOpen] = useState(false);
 
   return (
@@ -45,6 +45,11 @@ export const NavBar = ({ session }: { session: Session | null }) => {
           >
             Rules
           </Link>
+          {isAdmin && (
+            <Link href="/admin" className="hover:underline">
+              Admin
+            </Link>
+          )}
         </nav>
 
         <div className="flex items-center gap-2">
@@ -118,6 +123,15 @@ export const NavBar = ({ session }: { session: Session | null }) => {
           >
             Rules
           </Link>
+          {isAdmin && (
+            <Link
+              href="/admin"
+              className="block text-sm"
+              onClick={() => setMobileOpen(false)}
+            >
+              Admin
+            </Link>
+          )}
         </nav>
       )}
     </header>

@@ -25,7 +25,7 @@ const ProtectedLayout = async ({ children }: { children: ReactNode }) => {
   // await fetchGames();
   return (
     <div>
-      <NavBar session={session} />
+      <NavBar session={session} isAdmin={user?.role === "ADMIN"} />
       {children}
     </div>
   );

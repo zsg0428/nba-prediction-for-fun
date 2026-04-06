@@ -32,7 +32,7 @@ export default async function PredictionsPage() {
   const today = formatInTimeZone(new Date(), "America/New_York", "yyyy-MM-dd");
 
   const todaysDbGames = await fetchTodaysGamesFromDb(today);
-  const upcomingDbGames = await fetchUpcomingGamesFromDb();
+  const upcomingDbGames = await fetchUpcomingGamesFromDb(today);
 
   const todayGames = todaysDbGames.map(dbGameToGame);
   const allGames = upcomingDbGames.map(dbGameToGame);

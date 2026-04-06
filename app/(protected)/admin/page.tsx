@@ -3,6 +3,7 @@ import { getCurrentUser } from "@/actions/user";
 import { refreshGamesWithinOneMonth, refreshGameRounds } from "@/actions/games";
 import { refreshPredictions } from "@/actions/prediction";
 import { Role } from "@prisma/client";
+import { Shield } from "lucide-react";
 
 import { Button } from "@/components/ui/button";
 import RefreshButtons from "@/components/Admin/RefreshButtons";
@@ -23,22 +24,28 @@ export default async function AdminPage() {
   const user = await getCurrentUser();
   if (user?.role !== Role.ADMIN) {
     return (
-      <div>
-        <span>You have no access to the admin page</span>
+      <main className="flex min-h-[60vh] flex-col items-center justify-center gap-4">
+        <p className="text-muted-foreground">You don&apos;t have access to this page.</p>
         <Link href="/">
-          <Button variant="outline">Go back to homepage</Button>
+          <Button variant="outline">Go back</Button>
         </Link>
-      </div>
+      </main>
     );
   }
 
   return (
-    <main className="mx-auto max-w-4xl space-y-10 px-4 py-8">
-      <h1 className="text-3xl font-bold text-primary">Admin Panel</h1>
-      <RefreshButtons
-        refreshGames={handleRefreshGames}
-        refreshPredictions={handleRefreshPredictions}
-      />
+    <main className="mx-auto max-w-2xl space-y-8 px-4 py-8">
+      <div className="flex items-center gap-2">
+        <Shield className="h-6 w-6 text-primary" />
+        <h1 className="text-3xl font-bold tracking-tight">Admin</h1>
+      </div>
+
+      <div className="rounded-xl border border-border bg-card p-6">
+        <RefreshButtons
+          refreshGames={handleRefreshGames}
+          refreshPredictions={handleRefreshPredictions}
+        />
+      </div>
     </main>
   );
 }

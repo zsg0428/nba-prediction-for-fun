@@ -219,8 +219,10 @@ export const refreshGamesWithinOneMonth = async () => {
 }
 
 export const fetchTodaysGamesFromDb = async (todayStr: string) => {
-  const startOfDay = new Date(`${todayStr}T00:00:00.000Z`);
-  const endOfDay = new Date(`${todayStr}T23:59:59.999Z`);
+  // todayStr is in America/New_York, convert boundaries to UTC
+  // ET is UTC-4 (EDT) or UTC-5 (EST)
+  const startOfDay = new Date(`${todayStr}T00:00:00-04:00`);
+  const endOfDay = new Date(`${todayStr}T23:59:59.999-04:00`);
 
   return await prisma.game.findMany({
     where: {
@@ -234,11 +236,12 @@ export const fetchTodaysGamesFromDb = async (todayStr: string) => {
   });
 };
 
-export const fetchUpcomingGamesFromDb = async () => {
+export const fetchUpcomingGamesFromDb = async (todayStr: string) => {
+  const endOfToday = new Date(`${todayStr}T23:59:59.999-04:00`);
   return await prisma.game.findMany({
     where: {
       startTime: {
-        gt: new Date(),
+        gt: endOfToday,
       },
     },
     include: { round: true },

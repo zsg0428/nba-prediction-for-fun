@@ -141,6 +141,24 @@ const config = {
             opacity: "1",
           },
         },
+        "pulse-glow": {
+          "0%, 100%": {
+            boxShadow: "0 0 8px rgba(249, 115, 22, 0.4)",
+          },
+          "50%": {
+            boxShadow: "0 0 20px rgba(249, 115, 22, 0.7)",
+          },
+        },
+        "slide-up": {
+          "0%": {
+            opacity: "0",
+            transform: "translateY(20px)",
+          },
+          "100%": {
+            opacity: "1",
+            transform: "translateY(0)",
+          },
+        },
       },
       animation: {
         "accordion-down": "accordion-down 0.2s ease-out",
@@ -149,6 +167,8 @@ const config = {
         "fade-down": "fade-down 0.5s",
         "fade-in": "fade-in 0.4s",
         "fade-out": "fade-out 0.4s",
+        "pulse-glow": "pulse-glow 2s ease-in-out infinite",
+        "slide-up": "slide-up 0.4s ease-out",
       },
     },
   },

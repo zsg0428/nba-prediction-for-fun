@@ -11,6 +11,7 @@ async function handleRefreshGames() {
   "use server";
   await refreshGamesWithinOneMonth();
   await refreshGameRounds();
+  await refreshPredictions();
 }
 
 async function handleRefreshPredictions() {

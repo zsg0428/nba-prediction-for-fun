@@ -61,10 +61,10 @@ export const GameCard = ({ game, predictedTeam, onGuess, allOtherGameGuesses }: 
           <span className="text-sm">{game.visitor_team.name}</span>
         </div>
       </div>
-      <div className="flex gap-3">
+      <div className="text-center">
         Your Choice:
       </div>
-      <div className="flex gap-3">
+      <div className="flex justify-center gap-3">
         {[game.home_team.name, game.visitor_team.name].map((team) => (
           <Button
             key={team}

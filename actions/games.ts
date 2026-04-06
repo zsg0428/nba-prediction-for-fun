@@ -11,7 +11,7 @@ export const fetchGames = async () => {
   const today = format(new Date(), "yyyy-MM-dd");
   const allGames = await api.nba.getGames({
     // postseason: true,
-    seasons: [2024],
+    seasons: [2025],
     per_page: 100,
     start_date: today,
   });
@@ -21,7 +21,7 @@ export const fetchGames = async () => {
 
 export const fetchGamesWithinDayRange = async (startDate: string, endDate: string) => {
   const todaysGames = await api.nba.getGames({
-    seasons: [2024],
+    seasons: [2025],
     per_page: 100,
     start_date: startDate,
     end_date: endDate,
@@ -31,7 +31,7 @@ export const fetchGamesWithinDayRange = async (startDate: string, endDate: strin
 
 export const fetchGamesInSingleDay = async (date: string) => {
   const todaysGames = await api.nba.getGames({
-    seasons: [2024],
+    seasons: [2025],
     per_page: 20,
     start_date: date,
     end_date: date,

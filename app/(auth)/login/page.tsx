@@ -1,62 +1,51 @@
 "use client";
 
 import { googleLogin } from "@/actions/login";
-
-import { Button } from "@/components/ui/button";
-import { ThemeToggler } from "@/components/ThemeToggler/ThemeToggler";
+import { Trophy } from "lucide-react";
 
 export default function LoginPage() {
   return (
-    <div className="flex h-screen w-full flex-col items-center justify-center bg-background text-white">
-      <div className="mb-8">
-        <BasketballLogo />
-      </div>
-      <h1 className="mb-2 text-4xl font-bold text-orange-500">
-        Welcome Back 老哥们!
-      </h1>
-      <h2 className="text-black dark:text-white">猜就完事儿了！</h2>
-      <h2 className="mb-6 text-xl text-black dark:text-white">
-        Login with google
-      </h2>
-      <Button
-        variant="outline"
-        size="lg"
-        className="mb-4 flex cursor-pointer items-center gap-2 bg-gray-800 px-6 py-6 text-lg hover:bg-gray-700"
-        onClick={async () => {
-          await googleLogin();
-          console.log("logged in successfully");
-        }}
-      >
-        <GoogleIcon />
-        Google
-      </Button>
-      <ThemeToggler />
-    </div>
-  );
-}
+    <div className="relative flex min-h-screen items-center justify-center overflow-hidden bg-slate-950">
+      {/* Background gradient */}
+      <div className="absolute inset-0 bg-gradient-to-br from-orange-600/20 via-slate-950 to-blue-600/10" />
+      <div className="absolute -left-40 -top-40 h-96 w-96 rounded-full bg-orange-500/10 blur-3xl" />
+      <div className="absolute -bottom-40 -right-40 h-96 w-96 rounded-full bg-blue-500/10 blur-3xl" />
 
-function BasketballLogo() {
-  return (
-    <svg
-      width="100"
-      height="100"
-      viewBox="0 0 100 100"
-      fill="none"
-      xmlns="http://www.w3.org/2000/svg"
-    >
-      <circle
-        cx="50"
-        cy="50"
-        r="48"
-        fill="#F97316"
-        stroke="#FDBA74"
-        strokeWidth="4"
-      />
-      <path d="M50 2C50 2 50 50 50 98" stroke="black" strokeWidth="2" />
-      <path d="M98 50C98 50 50 50 2 50" stroke="black" strokeWidth="2" />
-      <path d="M85 15C85 15 50 50 15 85" stroke="black" strokeWidth="2" />
-      <path d="M85 85C85 85 50 50 15 15" stroke="black" strokeWidth="2" />
-    </svg>
+      {/* Card */}
+      <div className="relative z-10 mx-4 flex w-full max-w-md flex-col items-center rounded-2xl border border-white/10 bg-white/5 p-10 shadow-2xl backdrop-blur-xl">
+        {/* Logo */}
+        <div className="mb-6 flex h-20 w-20 items-center justify-center rounded-2xl bg-gradient-to-br from-orange-500 to-orange-600 shadow-lg shadow-orange-500/25">
+          <Trophy className="h-10 w-10 text-white" />
+        </div>
+
+        {/* Title */}
+        <h1 className="mb-1 text-3xl font-bold tracking-tight text-white">
+          Welcome Back 老哥们!
+        </h1>
+        <p className="mb-2 text-lg text-orange-400">
+          猜就完事儿了！
+        </p>
+        <p className="mb-8 text-sm text-slate-400">
+          Sign in to start making your picks
+        </p>
+
+        {/* Google Login Button */}
+        <button
+          onClick={async () => {
+            await googleLogin();
+          }}
+          className="flex w-full cursor-pointer items-center justify-center gap-3 rounded-xl bg-white px-6 py-3.5 text-base font-semibold text-slate-900 shadow-lg transition-all hover:-translate-y-0.5 hover:shadow-xl active:translate-y-0"
+        >
+          <GoogleIcon />
+          Continue with Google
+        </button>
+
+        {/* Footer */}
+        <p className="mt-8 text-center text-xs text-slate-500">
+          Pick game winners across NBA playoff rounds and compete with friends on the leaderboard
+        </p>
+      </div>
+    </div>
   );
 }
 

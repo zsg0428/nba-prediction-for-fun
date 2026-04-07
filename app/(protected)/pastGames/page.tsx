@@ -1,4 +1,5 @@
 import { fetchFinishedGamesSince } from "@/actions/games";
+import { fetchAllPredictions } from "@/actions/prediction";
 import PastGamesSection from "@/components/Games/PastGamesSection";
 
 export default async function PastGamesPage() {
@@ -9,9 +10,22 @@ export default async function PastGamesPage() {
       game.winnerTeam !== null
   );
 
+  const allPredictions = await fetchAllPredictions();
+  // Group predictions by apiGameId
+  const predictionsByGame: Record<number, { userName: string; predictedTeam: string }[]> = {};
+  for (const { game, user, predictedTeam } of allPredictions) {
+    if (!predictionsByGame[game.apiGameId]) {
+      predictionsByGame[game.apiGameId] = [];
+    }
+    predictionsByGame[game.apiGameId].push({
+      userName: user.name ?? "Unknown",
+      predictedTeam,
+    });
+  }
+
   return (
     <main className="mx-auto max-w-3xl space-y-6 px-4 py-8">
-      <PastGamesSection finishedGames={validFinishedGames} />
+      <PastGamesSection finishedGames={validFinishedGames} predictionsByGame={predictionsByGame} />
     </main>
   );
 }

@@ -1,8 +1,11 @@
+"use client";
+
+import { useState } from "react";
 import Image from "next/image";
 import { Card, CardContent } from "@/components/ui/card";
 import { formatInTimeZone } from "date-fns-tz";
 import { getTeamLogoUrl } from "@/constants/teams";
-import { CheckCircle2, Trophy } from "lucide-react";
+import { CheckCircle2, ChevronDown, ChevronUp, Trophy, XCircle } from "lucide-react";
 
 interface FinishedGame {
   id: string;
@@ -20,8 +23,14 @@ interface FinishedGame {
   } | null;
 }
 
+interface PlayerPrediction {
+  userName: string;
+  predictedTeam: string;
+}
+
 interface Props {
   finishedGames: FinishedGame[];
+  predictionsByGame: Record<number, PlayerPrediction[]>;
 }
 
 function TeamLogo({ teamName }: { teamName: string }) {
@@ -32,9 +41,69 @@ function TeamLogo({ teamName }: { teamName: string }) {
   );
 }
 
-export default function PastGamesSection({ finishedGames }: Props) {
+const VISIBLE_COUNT = 3;
+
+function PredictionsList({ predictions, winnerTeam }: { predictions: PlayerPrediction[]; winnerTeam: string | null }) {
+  const [expanded, setExpanded] = useState(false);
+
+  if (predictions.length === 0) {
+    return <span className="text-xs text-muted-foreground">No picks</span>;
+  }
+
+  const sorted = [...predictions].sort((a, b) => {
+    const aCorrect = a.predictedTeam === winnerTeam;
+    const bCorrect = b.predictedTeam === winnerTeam;
+    if (aCorrect && !bCorrect) return -1;
+    if (!aCorrect && bCorrect) return 1;
+    return 0;
+  });
+
+  const visible = expanded ? sorted : sorted.slice(0, VISIBLE_COUNT);
+  const hasMore = sorted.length > VISIBLE_COUNT;
+
+  return (
+    <div className="space-y-1">
+      <div className="flex flex-wrap gap-x-3 gap-y-1">
+        {visible.map((p) => {
+          const isCorrect = p.predictedTeam === winnerTeam;
+          return (
+            <span
+              key={p.userName}
+              className={`inline-flex items-center gap-1 text-xs font-medium ${
+                isCorrect
+                  ? "text-green-600 dark:text-green-400"
+                  : "text-red-500 dark:text-red-400"
+              }`}
+            >
+              {isCorrect ? (
+                <CheckCircle2 className="h-3 w-3" />
+              ) : (
+                <XCircle className="h-3 w-3" />
+              )}
+              {p.userName}
+            </span>
+          );
+        })}
+      </div>
+      {hasMore && (
+        <button
+          onClick={() => setExpanded(!expanded)}
+          className="flex cursor-pointer items-center gap-0.5 text-xs text-muted-foreground transition-colors hover:text-foreground"
+        >
+          {expanded ? (
+            <>Show less <ChevronUp className="h-3 w-3" /></>
+          ) : (
+            <>{sorted.length - VISIBLE_COUNT} more <ChevronDown className="h-3 w-3" /></>
+          )}
+        </button>
+      )}
+    </div>
+  );
+}
+
+export default function PastGamesSection({ finishedGames, predictionsByGame }: Props) {
   const sortedGames = [...finishedGames].sort(
-    (a, b) => b.startTime.getTime() - a.startTime.getTime()
+    (a, b) => new Date(b.startTime).getTime() - new Date(a.startTime).getTime()
   );
 
   return (
@@ -49,50 +118,57 @@ export default function PastGamesSection({ finishedGames }: Props) {
 
       <div className="space-y-3">
         {sortedGames.length > 0 ? (
-          sortedGames.map((game) => (
-            <Card key={game.id} className="overflow-hidden transition-all hover:shadow-md">
-              <CardContent className="flex flex-col gap-3 p-3 sm:flex-row sm:items-center sm:justify-between sm:gap-4 sm:p-4">
-                {/* Teams + Score */}
-                <div className="flex items-center gap-2 sm:gap-4">
-                  <div className="flex items-center gap-1.5">
-                    <TeamLogo teamName={game.homeTeam} />
-                    <span className={`text-xs font-semibold sm:text-sm ${game.winnerTeam === game.homeTeam ? "text-green-600 dark:text-green-400" : ""}`}>
-                      {game.homeTeam}
-                    </span>
+          sortedGames.map((game) => {
+            const predictions = predictionsByGame[game.apiGameId] ?? [];
+            return (
+              <Card key={game.id} className="overflow-hidden transition-all hover:shadow-md">
+                <CardContent className="space-y-3 p-3 sm:p-4">
+                  {/* Top row: teams + score + meta */}
+                  <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
+                    {/* Teams + Score */}
+                    <div className="flex items-center gap-2 sm:gap-4">
+                      <div className="flex items-center gap-1.5">
+                        <TeamLogo teamName={game.homeTeam} />
+                        <span className={`text-xs font-semibold sm:text-sm ${game.winnerTeam === game.homeTeam ? "text-green-600 dark:text-green-400" : ""}`}>
+                          {game.homeTeam}
+                        </span>
+                      </div>
+
+                      <span className="text-xs font-bold tabular-nums text-muted-foreground sm:text-sm">
+                        {game.homeTeamScore ?? 0} - {game.awayTeamScore ?? 0}
+                      </span>
+
+                      <div className="flex items-center gap-1.5">
+                        <span className={`text-xs font-semibold sm:text-sm ${game.winnerTeam === game.awayTeam ? "text-green-600 dark:text-green-400" : ""}`}>
+                          {game.awayTeam}
+                        </span>
+                        <TeamLogo teamName={game.awayTeam} />
+                      </div>
+                    </div>
+
+                    {/* Date + Round */}
+                    <div className="flex items-center gap-2 sm:flex-col sm:items-end sm:gap-0.5">
+                      <span className="text-xs text-muted-foreground">
+                        {formatInTimeZone(new Date(game.startTime), "America/New_York", "MMM d")}
+                      </span>
+                      {game.round && (
+                        <span className="text-xs text-muted-foreground">
+                          {game.round.name}
+                        </span>
+                      )}
+                    </div>
                   </div>
 
-                  <span className="text-xs font-bold tabular-nums text-muted-foreground sm:text-sm">
-                    {game.homeTeamScore ?? 0} - {game.awayTeamScore ?? 0}
-                  </span>
-
-                  <div className="flex items-center gap-1.5">
-                    <span className={`text-xs font-semibold sm:text-sm ${game.winnerTeam === game.awayTeam ? "text-green-600 dark:text-green-400" : ""}`}>
-                      {game.awayTeam}
-                    </span>
-                    <TeamLogo teamName={game.awayTeam} />
-                  </div>
-                </div>
-
-                {/* Meta */}
-                <div className="flex items-center gap-3 sm:flex-col sm:items-end sm:gap-1">
-                  <div className="flex items-center gap-1.5">
-                    <CheckCircle2 className="h-3.5 w-3.5 text-green-500" />
-                    <span className="text-xs font-medium text-green-600 dark:text-green-400 sm:text-sm">
-                      {game.winnerTeam}
-                    </span>
-                  </div>
-                  <span className="text-xs text-muted-foreground">
-                    {formatInTimeZone(game.startTime, "America/New_York", "MMM d")}
-                  </span>
-                  {game.round && (
-                    <span className="text-xs text-muted-foreground">
-                      {game.round.name}
-                    </span>
+                  {/* Predictions row */}
+                  {predictions.length > 0 && (
+                    <div className="border-t border-border/50 pt-2">
+                      <PredictionsList predictions={predictions} winnerTeam={game.winnerTeam} />
+                    </div>
                   )}
-                </div>
-              </CardContent>
-            </Card>
-          ))
+                </CardContent>
+              </Card>
+            );
+          })
         ) : (
           <div className="flex flex-col items-center justify-center rounded-xl border border-dashed border-border py-12 text-center">
             <p className="text-sm text-muted-foreground">

@@ -15,18 +15,18 @@ type Round = {
 };
 
 export default function RoundPointsManager({ rounds }: { rounds: Round[] }) {
-  const [values, setValues] = useState<Record<string, number>>(
-    Object.fromEntries(rounds.map((r) => [r.id, r.point])),
+  const [values, setValues] = useState<Record<string, string>>(
+    Object.fromEntries(rounds.map((r) => [r.id, String(r.point)])),
   );
   const [saving, setSaving] = useState<string | null>(null);
 
   const handleSave = async (round: Round) => {
-    const newPoint = values[round.id];
-    if (newPoint === round.point) return;
-    if (newPoint <= 0) {
+    const newPoint = parseFloat(values[round.id]);
+    if (isNaN(newPoint) || newPoint <= 0) {
       toast.error("Point value must be greater than 0");
       return;
     }
+    if (newPoint === round.point) return;
 
     setSaving(round.id);
     try {
@@ -59,7 +59,7 @@ export default function RoundPointsManager({ rounds }: { rounds: Round[] }) {
               min={0.5}
               value={values[round.id]}
               onChange={(e) =>
-                setValues((prev) => ({ ...prev, [round.id]: Number(e.target.value) }))
+                setValues((prev) => ({ ...prev, [round.id]: e.target.value }))
               }
               className="w-24"
             />
@@ -67,7 +67,7 @@ export default function RoundPointsManager({ rounds }: { rounds: Round[] }) {
             <Button
               size="sm"
               variant="outline"
-              disabled={saving === round.id || values[round.id] === round.point}
+              disabled={saving === round.id || parseFloat(values[round.id]) === round.point || values[round.id] === ""}
               onClick={() => handleSave(round)}
             >
               <Save className="mr-1 h-3.5 w-3.5" />

@@ -17,11 +17,17 @@ import TodaysGamesSection from "@/components/Games/TodaysGameSection";
 import { Game } from "@/types/IGames";
 import { PredictionMap } from "@/types/IPredictions";
 
+type RoundOption = {
+  name: string;
+  point: number;
+};
+
 type PredictionsDashboardProps = {
   todaysGames: Game[];
   allGames: Game[];
   currentUserGuesses: Record<number, string>;
   allOtherGameGuesses: PredictionMap;
+  rounds: RoundOption[];
 };
 
 export default function PredictionsDashboard({
@@ -29,6 +35,7 @@ export default function PredictionsDashboard({
   allGames,
   currentUserGuesses,
   allOtherGameGuesses,
+  rounds,
 }: PredictionsDashboardProps) {
   const [guesses, setGuesses] = useState<Record<number, string>>(currentUserGuesses);
 
@@ -66,11 +73,12 @@ export default function PredictionsDashboard({
           <div className="space-y-2">
             <h4 className="text-sm font-semibold">Scoring Rules</h4>
             <ul className="space-y-1.5 text-sm text-muted-foreground">
-              <li className="flex justify-between"><span>Play In</span><span className="font-medium text-foreground">1 pt</span></li>
-              <li className="flex justify-between"><span>First Round</span><span className="font-medium text-foreground">1.5 pts</span></li>
-              <li className="flex justify-between"><span>Conf. Semifinals</span><span className="font-medium text-foreground">2 pts</span></li>
-              <li className="flex justify-between"><span>Conf. Finals</span><span className="font-medium text-foreground">3 pts</span></li>
-              <li className="flex justify-between"><span>Finals</span><span className="font-medium text-foreground">5 pts</span></li>
+              {rounds.map((round) => (
+                <li key={round.name} className="flex justify-between">
+                  <span>{round.name}</span>
+                  <span className="font-medium text-foreground">{round.point} {round.point === 1 ? "pt" : "pts"}</span>
+                </li>
+              ))}
             </ul>
             <p className="text-xs text-muted-foreground">Predictions lock when the game starts.</p>
           </div>
@@ -83,6 +91,7 @@ export default function PredictionsDashboard({
         guesses={guesses}
         onGuess={handleGuess}
         allOtherGameGuesses={allOtherGameGuesses}
+        rounds={rounds}
       />
 
       {/* Upcoming Games */}
@@ -91,6 +100,7 @@ export default function PredictionsDashboard({
           games={allGames}
           guesses={guesses}
           onGuess={handleGuess}
+          rounds={rounds}
         />
       )}
     </main>

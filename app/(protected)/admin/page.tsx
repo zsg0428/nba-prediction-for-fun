@@ -1,6 +1,6 @@
 import Link from "next/link";
 import { getCurrentUser } from "@/actions/user";
-import { refreshGamesWithinOneMonth, refreshGameRounds, fetchAllGamesWithRounds } from "@/actions/games";
+import { refreshGamesWithinOneMonth, refreshGameRounds, fetchAllGamesWithRounds, fetchPendingRefreshStats } from "@/actions/games";
 import { refreshPredictions } from "@/actions/prediction";
 import { fetchAllRounds } from "@/actions/rounds";
 import { Role } from "@prisma/client";
@@ -36,9 +36,10 @@ export default async function AdminPage() {
     );
   }
 
-  const [rounds, games] = await Promise.all([
+  const [rounds, games, pendingStats] = await Promise.all([
     fetchAllRounds(),
     fetchAllGamesWithRounds(),
+    fetchPendingRefreshStats(),
   ]);
 
   return (
@@ -52,6 +53,7 @@ export default async function AdminPage() {
         <RefreshButtons
           refreshGames={handleRefreshGames}
           refreshPredictions={handleRefreshPredictions}
+          pendingStats={pendingStats}
         />
       </div>
 

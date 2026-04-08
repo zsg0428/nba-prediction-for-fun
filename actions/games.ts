@@ -169,6 +169,21 @@ export const bulkRemoveGameRound = async (apiGameIds: number[]) => {
   });
 };
 
+export const fetchPendingRefreshStats = async () => {
+  const now = new Date();
+
+  const [gamesWithoutWinner, unscoredPredictions] = await Promise.all([
+    prisma.game.count({
+      where: { winnerTeam: null, startTime: { lte: now } },
+    }),
+    prisma.prediction.count({
+      where: { isCorrect: null, game: { startTime: { lte: now } } },
+    }),
+  ]);
+
+  return { gamesWithoutWinner, unscoredPredictions };
+};
+
 export const fetchFinishedGamesSince = async (date: Date) => {
   const finishedGames = await prisma.game.findMany({
     where: {

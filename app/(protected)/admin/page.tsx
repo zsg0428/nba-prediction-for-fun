@@ -1,12 +1,15 @@
 import Link from "next/link";
 import { getCurrentUser } from "@/actions/user";
-import { refreshGamesWithinOneMonth, refreshGameRounds } from "@/actions/games";
+import { refreshGamesWithinOneMonth, refreshGameRounds, fetchAllGamesWithRounds, fetchPendingRefreshStats } from "@/actions/games";
 import { refreshPredictions } from "@/actions/prediction";
+import { fetchAllRounds } from "@/actions/rounds";
 import { Role } from "@prisma/client";
 import { Shield } from "lucide-react";
 
 import { Button } from "@/components/ui/button";
 import RefreshButtons from "@/components/Admin/RefreshButtons";
+import RoundPointsManager from "@/components/Admin/RoundPointsManager";
+import BulkGameManager from "@/components/Admin/BulkGameManager";
 
 async function handleRefreshGames() {
   "use server";
@@ -33,8 +36,14 @@ export default async function AdminPage() {
     );
   }
 
+  const [rounds, games, pendingStats] = await Promise.all([
+    fetchAllRounds(),
+    fetchAllGamesWithRounds(),
+    fetchPendingRefreshStats(),
+  ]);
+
   return (
-    <main className="mx-auto max-w-2xl space-y-8 px-4 py-8">
+    <main className="mx-auto max-w-4xl space-y-8 px-4 py-8">
       <div className="flex items-center gap-2">
         <Shield className="h-6 w-6 text-primary" />
         <h1 className="text-3xl font-bold tracking-tight">Admin</h1>
@@ -44,7 +53,16 @@ export default async function AdminPage() {
         <RefreshButtons
           refreshGames={handleRefreshGames}
           refreshPredictions={handleRefreshPredictions}
+          pendingStats={pendingStats}
         />
+      </div>
+
+      <div className="rounded-xl border border-border bg-card p-6">
+        <RoundPointsManager rounds={rounds} />
+      </div>
+
+      <div className="rounded-xl border border-border bg-card p-6">
+        <BulkGameManager games={games} rounds={rounds} />
       </div>
     </main>
   );

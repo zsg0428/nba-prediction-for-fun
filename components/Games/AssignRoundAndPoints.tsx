@@ -19,22 +19,21 @@ import {
 } from "@/components/ui/select";
 import DestructiveModal from "@/components/destructive-modal";
 
-const ROUND_OPTIONS = [
-  { label: "Play In", value: "Play In", point: 1 },
-  { label: "First Round", value: "First Round", point: 1.5 },
-  { label: "Conference Semifinals", value: "Conference Semifinals", point: 2 },
-  { label: "Conference Finals", value: "Conference Finals", point: 3 },
-  { label: "Finals", value: "Finals", point: 5 },
-];
+type RoundOption = {
+  name: string;
+  point: number;
+};
+
 type AssignProps = {
   gameId: number;
+  rounds: RoundOption[];
   onSubmit: (gameId: string | number, round: string) => Promise<void>;
 };
 
-export const AssignRoundAndPoints = ({ gameId, onSubmit }: AssignProps) => {
+export const AssignRoundAndPoints = ({ gameId, rounds, onSubmit }: AssignProps) => {
   const user = useUser();
-  const [selectedRound, setSelectedRound] = useState(ROUND_OPTIONS[0].value);
-  const [point, setPoint] = useState(ROUND_OPTIONS[0].point);
+  const [selectedRound, setSelectedRound] = useState(rounds[0]?.name ?? "");
+  const [point, setPoint] = useState(rounds[0]?.point ?? 0);
   const [loading, setLoading] = useState<boolean>(false);
 
   const router = useRouter();
@@ -71,7 +70,7 @@ export const AssignRoundAndPoints = ({ gameId, onSubmit }: AssignProps) => {
           value={selectedRound}
           onValueChange={(value) => {
             setSelectedRound(value);
-            const option = ROUND_OPTIONS.find((r) => r.value === value);
+            const option = rounds.find((r) => r.name === value);
             if (option) setPoint(option.point);
           }}
         >
@@ -79,13 +78,11 @@ export const AssignRoundAndPoints = ({ gameId, onSubmit }: AssignProps) => {
             <SelectValue placeholder="Select round" />
           </SelectTrigger>
           <SelectContent>
-            <>
-              {ROUND_OPTIONS.map((option) => (
-                <SelectItem key={option.value} value={option.value}>
-                  {option.label}
-                </SelectItem>
-              ))}
-            </>
+            {rounds.map((option) => (
+              <SelectItem key={option.name} value={option.name}>
+                {option.name}
+              </SelectItem>
+            ))}
           </SelectContent>
         </Select>
 

@@ -9,6 +9,7 @@ import {
   fetchUpcomingGamesFromDb,
 } from "@/actions/games";
 import { fetchUsersPredictions, fetchAllPredictions } from "@/actions/prediction";
+import { fetchAllRounds } from "@/actions/rounds";
 import { PredictionMap } from "@/types/IPredictions";
 import { Game } from "@/types/IGames";
 
@@ -37,8 +38,11 @@ export default async function PredictionsPage() {
   const todayGames = todaysDbGames.map(dbGameToGame);
   const allGames = upcomingDbGames.map(dbGameToGame);
 
-  const currentUserGuesses = await fetchCurrentUserGuesses();
-  const allOtherUserGuesses = await fetchAllUserGuesses();
+  const [currentUserGuesses, allOtherUserGuesses, rounds] = await Promise.all([
+    fetchCurrentUserGuesses(),
+    fetchAllUserGuesses(),
+    fetchAllRounds(),
+  ]);
 
   return (
     <PredictionsDashboard
@@ -46,6 +50,7 @@ export default async function PredictionsPage() {
       allGames={allGames}
       currentUserGuesses={currentUserGuesses}
       allOtherGameGuesses={allOtherUserGuesses}
+      rounds={rounds}
     />
   );
 }

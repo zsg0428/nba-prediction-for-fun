@@ -11,14 +11,20 @@ import { Game } from "@/types/IGames";
 import { PredictionMap } from "@/types/IPredictions";
 import { GameCard } from "../Predicitions/GameCard";
 
+type RoundOption = {
+  name: string;
+  point: number;
+};
+
 type Props = {
   games: Game[];
   guesses: Record<string, string>;
   onGuess: (gameApiId: number, team: string) => void;
   allOtherGameGuesses: PredictionMap;
+  rounds: RoundOption[];
 };
 
-export default function TodaysGamesSection({ games, guesses, onGuess, allOtherGameGuesses }: Props) {
+export default function TodaysGamesSection({ games, guesses, onGuess, allOtherGameGuesses, rounds }: Props) {
   const handleAssignRound = async (gameApiId: number, roundName: string) => {
     try {
       await assignGameToRound(gameApiId, roundName);
@@ -57,6 +63,7 @@ export default function TodaysGamesSection({ games, guesses, onGuess, allOtherGa
               />
               <AssignRoundAndPoints
                 gameId={game.id}
+                rounds={rounds}
                 onSubmit={(gameId, round) =>
                   handleAssignRound(gameId as number, round)
                 }

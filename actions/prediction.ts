@@ -3,7 +3,7 @@
 import { prisma } from "@/lib/db";
 import { api } from "@/lib/nbaApi";
 
-import { fetchAllPendingGamesFromDb, updateGameWinnerTeam } from "./games";
+import { updateGameWinnerTeam } from "./games";
 
 interface GameParam {
   gameId: number;
@@ -69,44 +69,85 @@ export const upsertPrediction = async ({
 };
 
 export const refreshPredictions = async () => {
-  const pendingGames = await fetchAllPendingGamesFromDb();
+  const now = new Date();
 
-  for (let pendingGame of pendingGames) {
+  // Single query: all unscored predictions with their game data
+  const unscoredPredictions = await prisma.prediction.findMany({
+    where: { isCorrect: null, game: { startTime: { lte: now } } },
+    include: { game: true },
+  });
+
+  if (unscoredPredictions.length === 0) return;
+
+  // Split into two groups: games with winner already known vs unknown
+  const withWinner: { predictionId: string; predictedTeam: string; winnerTeam: string }[] = [];
+  const needsApi = new Map<string, typeof unscoredPredictions>();
+
+  for (const pred of unscoredPredictions) {
+    if (pred.game.winnerTeam) {
+      withWinner.push({
+        predictionId: pred.id,
+        predictedTeam: pred.predictedTeam,
+        winnerTeam: pred.game.winnerTeam,
+      });
+    } else {
+      const group = needsApi.get(pred.gameId) ?? [];
+      group.push(pred);
+      needsApi.set(pred.gameId, group);
+    }
+  }
+
+  // Batch 1: Bulk score predictions where winner is already known (2 queries total)
+  if (withWinner.length > 0) {
+    const correctIds = withWinner.filter((p) => p.predictedTeam === p.winnerTeam).map((p) => p.predictionId);
+    const incorrectIds = withWinner.filter((p) => p.predictedTeam !== p.winnerTeam).map((p) => p.predictionId);
+
+    await prisma.$transaction([
+      ...(correctIds.length > 0
+        ? [prisma.prediction.updateMany({ where: { id: { in: correctIds } }, data: { isCorrect: true } })]
+        : []),
+      ...(incorrectIds.length > 0
+        ? [prisma.prediction.updateMany({ where: { id: { in: incorrectIds } }, data: { isCorrect: false } })]
+        : []),
+    ]);
+
+    console.log(`Bulk scored ${withWinner.length} predictions (${correctIds.length} correct, ${incorrectIds.length} incorrect)`);
+  }
+
+  // Batch 2: Games that need API call (no winner yet) — sequential due to rate limits
+  for (const [gameId, preds] of needsApi) {
+    const game = preds[0].game;
     try {
-      const game = await api.nba.getGame(pendingGame.apiGameId);
-      if (game.data.status === "Final") {
-        const winnerTeam =
-          game.data.home_team_score > game.data.visitor_team_score
-            ? game.data.home_team.name
-            : game.data.visitor_team.name;
-  
-        await updateGameWinnerTeam(pendingGame.id, winnerTeam);
-        await upsertPredictionResult(pendingGame.id, winnerTeam);
-        console.log(`Updated game ${pendingGame.apiGameId} with winner ${winnerTeam}`);
-      }
-    }
-    catch (error) {
-      console.error(`Failed to fetch game ${pendingGame.apiGameId}:`, error);
+      const apiGame = await api.nba.getGame(game.apiGameId);
+      if (apiGame.data.status !== "Final") continue;
+
+      const winnerTeam =
+        apiGame.data.home_team_score > apiGame.data.visitor_team_score
+          ? apiGame.data.home_team.name
+          : apiGame.data.visitor_team.name;
+
+      await updateGameWinnerTeam(game.id, winnerTeam);
+
+      const correctIds = preds.filter((p) => p.predictedTeam === winnerTeam).map((p) => p.id);
+      const incorrectIds = preds.filter((p) => p.predictedTeam !== winnerTeam).map((p) => p.id);
+
+      await prisma.$transaction([
+        ...(correctIds.length > 0
+          ? [prisma.prediction.updateMany({ where: { id: { in: correctIds } }, data: { isCorrect: true } })]
+          : []),
+        ...(incorrectIds.length > 0
+          ? [prisma.prediction.updateMany({ where: { id: { in: incorrectIds } }, data: { isCorrect: false } })]
+          : []),
+      ]);
+
+      console.log(`Scored ${preds.length} predictions for game ${game.apiGameId} (winner: ${winnerTeam})`);
+    } catch (error) {
+      console.error(`Failed to process game ${game.apiGameId}:`, error);
     }
   }
 };
 
-const upsertPredictionResult = async (gameId: string, winnerTeam: string) => {
-  const predictions = await fetchPredictionsByGameId(gameId);
-
-  for (let prediction of predictions) {
-    await prisma.prediction.update({
-      where: {
-        id: prediction.id,
-      },
-      data: {
-        isCorrect: prediction.predictedTeam === winnerTeam,
-      },
-    });
-  }
-};
-
-const fetchPredictionsByGameId = async (gameId: string) => {
+export const fetchPredictionsByGameId = async (gameId: string) => {
   return await prisma.prediction.findMany({
     where: {
       gameId: gameId,

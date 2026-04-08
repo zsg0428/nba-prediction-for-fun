@@ -11,10 +11,16 @@ import { AssignRoundAndPoints } from "@/components/Games/AssignRoundAndPoints";
 import { Game } from "@/types/IGames";
 import { GameCard } from "../Predicitions/GameCard";
 
+type RoundOption = {
+  name: string;
+  point: number;
+};
+
 type Props = {
   games: Game[];
   guesses: Record<string, string>;
   onGuess: (gameApiId: number, team: string) => void;
+  rounds: RoundOption[];
 };
 
 type GroupedGames = Record<string, Game[]>;
@@ -23,6 +29,7 @@ export default function AllGamesSection({
   games,
   onGuess,
   guesses,
+  rounds,
 }: Props) {
   const [visibleDates, setVisibleDates] = useState(3);
 
@@ -82,6 +89,7 @@ export default function AllGamesSection({
                   />
                   <AssignRoundAndPoints
                     gameId={game.id}
+                    rounds={rounds}
                     onSubmit={(gameId, round) =>
                       handleAssignRound(gameId as number, round)
                     }

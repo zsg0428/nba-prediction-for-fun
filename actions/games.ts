@@ -145,6 +145,30 @@ export const fetchAllSortedPlayoffGamesFromDb = async () => {
   return dbGames;
 };
 
+export const fetchAllGamesWithRounds = async () => {
+  return await prisma.game.findMany({
+    orderBy: { startTime: "asc" },
+    include: { round: true },
+  });
+};
+
+export const bulkAssignGameRound = async (apiGameIds: number[], roundName: string) => {
+  const round = await prisma.round.findUnique({ where: { name: roundName } });
+  if (!round) throw new Error(`Round "${roundName}" not found`);
+
+  return await prisma.game.updateMany({
+    where: { apiGameId: { in: apiGameIds } },
+    data: { roundId: round.id },
+  });
+};
+
+export const bulkRemoveGameRound = async (apiGameIds: number[]) => {
+  return await prisma.game.updateMany({
+    where: { apiGameId: { in: apiGameIds } },
+    data: { roundId: null },
+  });
+};
+
 export const fetchFinishedGamesSince = async (date: Date) => {
   const finishedGames = await prisma.game.findMany({
     where: {

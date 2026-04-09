@@ -12,7 +12,7 @@ export default async function PastGamesPage() {
 
   const allPredictions = await fetchAllPredictions();
   // Group predictions by apiGameId
-  const predictionsByGame: Record<number, { userName: string; predictedTeam: string }[]> = {};
+  const predictionsByGame: Record<number, { userName: string; predictedTeam: string; favoriteTeam?: string | null; avatar?: string | null }[]> = {};
   for (const { game, user, predictedTeam } of allPredictions) {
     if (!predictionsByGame[game.apiGameId]) {
       predictionsByGame[game.apiGameId] = [];
@@ -20,6 +20,8 @@ export default async function PastGamesPage() {
     predictionsByGame[game.apiGameId].push({
       userName: user.name ?? "Unknown",
       predictedTeam,
+      favoriteTeam: user.favoriteTeam,
+      avatar: user.avatar,
     });
   }
 

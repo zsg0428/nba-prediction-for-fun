@@ -30,6 +30,8 @@ export async function getLeaderboard() {
       name: user.name,
       email: user.email,
       image: user.image,
+      favoriteTeam: user.favoriteTeam,
+      avatar: user.avatar,
       totalPoints,
     };
   });

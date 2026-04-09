@@ -30,6 +30,22 @@ export const createUserIfNotExists = async (user: UserData): Promise<void> => {
   }
 };
 
+export const updateUserProfile = async (data: {
+  name: string;
+  favoriteTeam: string | null;
+  avatar?: string | null;
+}) => {
+  const userId = await getCurrentUserId();
+  await prisma.user.update({
+    where: { id: userId },
+    data: {
+      name: data.name,
+      favoriteTeam: data.favoriteTeam,
+      avatar: data.avatar ?? null,
+    },
+  });
+};
+
 export const updateEmailReminders = async (
   userId: string,
   enabled: boolean,

@@ -34,6 +34,8 @@ const NBA_TEAM_IDS: Record<string, number> = {
   Wizards: 1610612764,
 };
 
+export const NBA_TEAM_NAMES = Object.keys(NBA_TEAM_IDS);
+
 export function getTeamLogoUrl(teamName: string): string {
   const teamId = NBA_TEAM_IDS[teamName];
   if (!teamId) return "";

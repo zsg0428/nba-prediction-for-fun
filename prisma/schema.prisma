@@ -22,6 +22,8 @@ model User {
   createdAt      DateTime     @default(now())
   role           Role         @default(USER)
   emailReminders Boolean      @default(true)
+  favoriteTeam   String?
+  avatar         String?
 }
 
 model Round {

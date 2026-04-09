@@ -21,7 +21,12 @@ const ProtectedLayout = async ({ children }: { children: ReactNode }) => {
 
   return (
     <div>
-      <NavBar session={session} isAdmin={user?.role === Role.ADMIN} />
+      <NavBar
+        session={session}
+        isAdmin={user?.role === Role.ADMIN}
+        userId={user?.id ?? ""}
+        emailReminders={user?.emailReminders ?? true}
+      />
       {children}
     </div>
   );

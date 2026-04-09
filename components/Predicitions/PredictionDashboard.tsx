@@ -14,6 +14,7 @@ import {
 } from "@/components/ui/popover";
 import AllGamesSection from "@/components/Games/AllGamesSection";
 import TodaysGamesSection from "@/components/Games/TodaysGameSection";
+import UnbidGamesModal from "@/components/Predicitions/UnbidGamesModal";
 import { Game } from "@/types/IGames";
 import { PredictionMap } from "@/types/IPredictions";
 
@@ -28,6 +29,7 @@ type PredictionsDashboardProps = {
   currentUserGuesses: Record<number, string>;
   allOtherGameGuesses: PredictionMap;
   rounds: RoundOption[];
+  unbidGames: Game[];
 };
 
 export default function PredictionsDashboard({
@@ -36,6 +38,7 @@ export default function PredictionsDashboard({
   currentUserGuesses,
   allOtherGameGuesses,
   rounds,
+  unbidGames,
 }: PredictionsDashboardProps) {
   const [guesses, setGuesses] = useState<Record<number, string>>(currentUserGuesses);
 
@@ -54,6 +57,8 @@ export default function PredictionsDashboard({
 
   return (
     <main className="mx-auto max-w-5xl space-y-8 px-4 py-8">
+      <UnbidGamesModal unbidGames={unbidGames} />
+
       {/* Header */}
       <div className="space-y-1">
         <h1 className="text-3xl font-bold tracking-tight">Predictions</h1>

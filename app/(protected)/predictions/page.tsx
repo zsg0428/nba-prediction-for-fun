@@ -8,7 +8,11 @@ import {
   fetchTodaysGamesFromDb,
   fetchUpcomingGamesFromDb,
 } from "@/actions/games";
-import { fetchUsersPredictions, fetchAllPredictions } from "@/actions/prediction";
+import {
+  fetchUsersPredictions,
+  fetchAllPredictions,
+  fetchTodaysUnbidGames,
+} from "@/actions/prediction";
 import { fetchAllRounds } from "@/actions/rounds";
 import { PredictionMap } from "@/types/IPredictions";
 import { Game } from "@/types/IGames";
@@ -38,11 +42,17 @@ export default async function PredictionsPage() {
   const todayGames = todaysDbGames.map(dbGameToGame);
   const allGames = upcomingDbGames.map(dbGameToGame);
 
-  const [currentUserGuesses, allOtherUserGuesses, rounds] = await Promise.all([
-    fetchCurrentUserGuesses(),
-    fetchAllUserGuesses(),
-    fetchAllRounds(),
-  ]);
+  const userId = await getCurrentUserId();
+
+  const [currentUserGuesses, allOtherUserGuesses, rounds, unbidDbGames] =
+    await Promise.all([
+      fetchCurrentUserGuesses(userId),
+      fetchAllUserGuesses(userId),
+      fetchAllRounds(),
+      fetchTodaysUnbidGames(userId, today),
+    ]);
+
+  const unbidGames = unbidDbGames.map(dbGameToGame);
 
   return (
     <PredictionsDashboard
@@ -51,23 +61,22 @@ export default async function PredictionsPage() {
       currentUserGuesses={currentUserGuesses}
       allOtherGameGuesses={allOtherUserGuesses}
       rounds={rounds}
+      unbidGames={unbidGames}
     />
   );
 }
 
 
-const fetchCurrentUserGuesses = async () => {
-  const userId = await getCurrentUserId();
+const fetchCurrentUserGuesses = async (userId: string) => {
   const currentUserPredictions = await fetchUsersPredictions(userId);
   const currentUserGuesses = Object.fromEntries(
     currentUserPredictions.map((p) => [p.game.apiGameId, p.predictedTeam]),
   );
 
   return currentUserGuesses;
-}
+};
 
-const fetchAllUserGuesses = async () => {
-  const currentUserId = await getCurrentUserId();
+const fetchAllUserGuesses = async (currentUserId: string) => {
   const allPredictions = await fetchAllPredictions();
   const groupedPredictions: PredictionMap = {};
 
@@ -76,9 +85,12 @@ const fetchAllUserGuesses = async () => {
       groupedPredictions[game.apiGameId] = [];
     }
     if (user.id !== currentUserId) {
-      groupedPredictions[game.apiGameId].push({ user: user.name, predictedTeam });
+      groupedPredictions[game.apiGameId].push({
+        user: user.name,
+        predictedTeam,
+      });
     }
   }
 
-  return groupedPredictions
-}
+  return groupedPredictions;
+};

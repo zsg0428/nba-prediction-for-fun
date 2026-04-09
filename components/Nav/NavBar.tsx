@@ -3,8 +3,9 @@
 import { useState } from "react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { Menu, X, Trophy, BarChart3, Clock, BookOpen, Shield } from "lucide-react";
+import { Menu, X, Trophy, BarChart3, Clock, BookOpen, Shield, Bell, BellOff } from "lucide-react";
 import { Session } from "next-auth";
+import { toast } from "sonner";
 
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Button } from "@/components/ui/button";
@@ -12,10 +13,12 @@ import {
   DropdownMenu,
   DropdownMenuContent,
   DropdownMenuItem,
+  DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 import { SignoutButton } from "@/components/Signout/SignoutButton";
 import { ThemeToggler } from "@/components/ThemeToggler/ThemeToggler";
+import { updateEmailReminders } from "@/actions/user";
 
 const NAV_ITEMS = [
   { href: "/predictions", label: "Predictions", icon: Trophy },
@@ -24,9 +27,34 @@ const NAV_ITEMS = [
   { href: "/rules", label: "Rules", icon: BookOpen },
 ];
 
-export const NavBar = ({ session, isAdmin }: { session: Session | null; isAdmin?: boolean }) => {
+export const NavBar = ({
+  session,
+  isAdmin,
+  userId,
+  emailReminders: initialEmailReminders,
+}: {
+  session: Session | null;
+  isAdmin?: boolean;
+  userId: string;
+  emailReminders: boolean;
+}) => {
   const [mobileOpen, setMobileOpen] = useState(false);
+  const [emailReminders, setEmailReminders] = useState(initialEmailReminders);
   const pathname = usePathname();
+
+  const handleToggleEmailReminders = async () => {
+    const newValue = !emailReminders;
+    setEmailReminders(newValue);
+    try {
+      await updateEmailReminders(userId, newValue);
+      toast.success(
+        newValue ? "Email reminders enabled" : "Email reminders disabled",
+      );
+    } catch {
+      setEmailReminders(!newValue);
+      toast.error("Failed to update email preference");
+    }
+  };
 
   return (
     <header className="sticky top-0 z-50 border-b border-border/50 bg-background/80 backdrop-blur-lg">
@@ -107,6 +135,19 @@ export const NavBar = ({ session, isAdmin }: { session: Session | null; isAdmin?
                   <span className="font-medium">{session.user.name}</span>
                   <span className="text-xs text-muted-foreground">{session.user.email}</span>
                 </DropdownMenuItem>
+                <DropdownMenuSeparator />
+                <DropdownMenuItem
+                  onClick={handleToggleEmailReminders}
+                  className="cursor-pointer"
+                >
+                  {emailReminders ? (
+                    <Bell className="mr-2 h-4 w-4" />
+                  ) : (
+                    <BellOff className="mr-2 h-4 w-4" />
+                  )}
+                  Email Reminders: {emailReminders ? "On" : "Off"}
+                </DropdownMenuItem>
+                <DropdownMenuSeparator />
                 <DropdownMenuItem>
                   <SignoutButton />
                 </DropdownMenuItem>

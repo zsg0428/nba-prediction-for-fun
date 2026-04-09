@@ -170,6 +170,29 @@ export const fetchUsersPredictions = async (userId: string) => {
   });
 }
 
+export const fetchTodaysUnbidGames = async (
+  userId: string,
+  todayStr: string,
+) => {
+  const startOfDay = new Date(`${todayStr}T00:00:00-04:00`);
+  const endOfDay = new Date(`${todayStr}T23:59:59.999-04:00`);
+
+  return await prisma.game.findMany({
+    where: {
+      startTime: {
+        gte: startOfDay,
+        lte: endOfDay,
+        gt: new Date(),
+      },
+      predictions: {
+        none: { userId },
+      },
+    },
+    include: { round: true },
+    orderBy: { startTime: "asc" },
+  });
+};
+
 export const fetchAllPredictions = async () => {
   return await prisma.prediction.findMany({
     include: {

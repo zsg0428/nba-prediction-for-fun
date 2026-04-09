@@ -6,6 +6,7 @@ import { Card, CardContent } from "@/components/ui/card";
 import { formatInTimeZone } from "date-fns-tz";
 import { getTeamLogoUrl } from "@/constants/teams";
 import { CheckCircle2, ChevronDown, ChevronUp, Trophy, XCircle } from "lucide-react";
+import AvatarBadge from "@/components/AvatarBadge";
 
 interface FinishedGame {
   id: string;
@@ -26,6 +27,8 @@ interface FinishedGame {
 interface PlayerPrediction {
   userName: string;
   predictedTeam: string;
+  favoriteTeam?: string | null;
+  avatar?: string | null;
 }
 
 interface Props {
@@ -80,6 +83,7 @@ function PredictionsList({ predictions, winnerTeam }: { predictions: PlayerPredi
               ) : (
                 <XCircle className="h-3 w-3" />
               )}
+              <AvatarBadge avatar={p.avatar} favoriteTeam={p.favoriteTeam} size={14} />
               {p.userName}
             </span>
           );

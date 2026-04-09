@@ -47,7 +47,7 @@ export default async function PredictionsPage() {
   const [currentUserGuesses, allOtherUserGuesses, rounds, unbidDbGames] =
     await Promise.all([
       fetchCurrentUserGuesses(userId),
-      fetchAllUserGuesses(userId),
+      fetchAllUserGuesses(),
       fetchAllRounds(),
       fetchTodaysUnbidGames(userId, today),
     ]);
@@ -76,7 +76,7 @@ const fetchCurrentUserGuesses = async (userId: string) => {
   return currentUserGuesses;
 };
 
-const fetchAllUserGuesses = async (currentUserId: string) => {
+const fetchAllUserGuesses = async () => {
   const allPredictions = await fetchAllPredictions();
   const groupedPredictions: PredictionMap = {};
 
@@ -84,12 +84,12 @@ const fetchAllUserGuesses = async (currentUserId: string) => {
     if (!groupedPredictions[game.apiGameId]) {
       groupedPredictions[game.apiGameId] = [];
     }
-    if (user.id !== currentUserId) {
-      groupedPredictions[game.apiGameId].push({
-        user: user.name,
-        predictedTeam,
-      });
-    }
+    groupedPredictions[game.apiGameId].push({
+      user: user.name,
+      predictedTeam,
+      favoriteTeam: user.favoriteTeam,
+      avatar: user.avatar,
+    });
   }
 
   return groupedPredictions;

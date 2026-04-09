@@ -26,6 +26,7 @@ const ProtectedLayout = async ({ children }: { children: ReactNode }) => {
         isAdmin={user?.role === Role.ADMIN}
         userId={user?.id ?? ""}
         emailReminders={user?.emailReminders ?? true}
+        favoriteTeam={user?.favoriteTeam ?? null}
       />
       {children}
     </div>

@@ -205,6 +205,8 @@ export const fetchAllPredictions = async () => {
         select: {
           id: true,
           name: true,
+          favoriteTeam: true,
+          avatar: true,
         }
       }
     }, 

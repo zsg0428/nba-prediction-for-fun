@@ -3,7 +3,7 @@
 import { useState } from "react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { Menu, X, Trophy, BarChart3, Clock, BookOpen, Shield, Bell, BellOff } from "lucide-react";
+import { Menu, X, Trophy, BarChart3, Clock, BookOpen, Shield, Bell, BellOff, User } from "lucide-react";
 import { Session } from "next-auth";
 import { toast } from "sonner";
 
@@ -19,11 +19,13 @@ import {
 import { SignoutButton } from "@/components/Signout/SignoutButton";
 import { ThemeToggler } from "@/components/ThemeToggler/ThemeToggler";
 import { updateEmailReminders } from "@/actions/user";
+import AvatarBadge from "@/components/AvatarBadge";
 
 const NAV_ITEMS = [
   { href: "/predictions", label: "Predictions", icon: Trophy },
   { href: "/pastGames", label: "Past Games", icon: Clock },
   { href: "/leaderboard", label: "Leaderboard", icon: BarChart3 },
+  { href: "/profile", label: "Profile", icon: User },
   { href: "/rules", label: "Rules", icon: BookOpen },
 ];
 
@@ -32,11 +34,13 @@ export const NavBar = ({
   isAdmin,
   userId,
   emailReminders: initialEmailReminders,
+  favoriteTeam,
 }: {
   session: Session | null;
   isAdmin?: boolean;
   userId: string;
   emailReminders: boolean;
+  favoriteTeam: string | null;
 }) => {
   const [mobileOpen, setMobileOpen] = useState(false);
   const [emailReminders, setEmailReminders] = useState(initialEmailReminders);
@@ -132,10 +136,19 @@ export const NavBar = ({
               </DropdownMenuTrigger>
               <DropdownMenuContent align="end" className="w-56">
                 <DropdownMenuItem disabled className="flex flex-col items-start">
-                  <span className="font-medium">{session.user.name}</span>
+                  <span className="flex items-center gap-1.5 font-medium">
+                    {session.user.name}
+                    <AvatarBadge favoriteTeam={favoriteTeam} size={16} />
+                  </span>
                   <span className="text-xs text-muted-foreground">{session.user.email}</span>
                 </DropdownMenuItem>
                 <DropdownMenuSeparator />
+                <DropdownMenuItem asChild className="cursor-pointer">
+                  <Link href="/profile">
+                    <User className="mr-2 h-4 w-4" />
+                    Profile
+                  </Link>
+                </DropdownMenuItem>
                 <DropdownMenuItem
                   onClick={handleToggleEmailReminders}
                   className="cursor-pointer"

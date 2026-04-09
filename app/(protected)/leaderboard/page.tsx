@@ -2,6 +2,8 @@ import { getLeaderboard } from "@/actions/leaderboard";
 import { getCurrentUser } from "@/actions/user";
 import { BarChart3, Medal, Trophy } from "lucide-react";
 import Image from "next/image";
+import AvatarBadge from "@/components/AvatarBadge";
+import TeamBadge from "@/components/TeamBadge";
 
 const RANK_STYLES: Record<number, { bg: string; border: string; badge: string; icon: string }> = {
   1: { bg: "bg-amber-50 dark:bg-amber-900/20", border: "border-amber-300 dark:border-amber-600", badge: "bg-amber-400 text-amber-950", icon: "text-amber-500" },
@@ -66,14 +68,21 @@ export default async function LeaderboardPage() {
                   )}
                 </div>
 
-                {/* Name */}
+                {/* Name + Badges */}
                 <div className="min-w-0">
-                  <p className="truncate text-sm font-semibold sm:text-base">
+                  <p className="flex items-center gap-1.5 truncate text-sm font-semibold sm:text-base">
                     {user.name ?? user.email}
+                    <AvatarBadge avatar={user.avatar} size={28} />
                     {isCurrentUser && (
-                      <span className="ml-2 text-xs text-primary">(You)</span>
+                      <span className="ml-1 text-xs text-primary">(You)</span>
                     )}
                   </p>
+                  {user.favoriteTeam && (
+                    <p className="mt-0.5 flex items-center gap-1 text-xs text-muted-foreground">
+                      <TeamBadge teamName={user.favoriteTeam} size={14} />
+                      <span>{user.favoriteTeam} fan</span>
+                    </p>
+                  )}
                 </div>
               </div>
 

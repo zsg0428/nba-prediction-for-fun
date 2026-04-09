@@ -8,6 +8,7 @@ import { Calendar, Clock, Trophy } from "lucide-react";
 
 import { Game } from "@/types/IGames";
 import { PredictionMap } from "@/types/IPredictions";
+import AvatarBadge from "@/components/AvatarBadge";
 
 interface GameCardProps {
   game: Game;
@@ -136,7 +137,7 @@ export const GameCard = ({ game, predictedTeam, onGuess, allOtherGameGuesses }: 
       {allOtherGameGuesses && allOtherGameGuesses[game.id]?.length > 0 && (
         <div className="space-y-1.5 border-t border-border/50 pt-3">
           <p className="text-xs font-medium uppercase tracking-wider text-muted-foreground">
-            Others&apos; Picks
+            All Picks
           </p>
           <div className="flex flex-wrap gap-2">
             {allOtherGameGuesses[game.id]?.map((guess) => (
@@ -144,6 +145,7 @@ export const GameCard = ({ game, predictedTeam, onGuess, allOtherGameGuesses }: 
                 key={guess.user}
                 className="inline-flex items-center gap-1 rounded-full bg-muted px-2.5 py-1 text-xs"
               >
+                <AvatarBadge avatar={guess.avatar} favoriteTeam={guess.favoriteTeam} size={14} />
                 <span className="font-medium">{guess.user}</span>
                 <span className="text-muted-foreground">{guess.predictedTeam}</span>
               </span>

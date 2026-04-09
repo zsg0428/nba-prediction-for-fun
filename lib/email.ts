@@ -1,6 +1,11 @@
 import { Resend } from "resend";
 
-const resend = new Resend(process.env.RESEND_API_KEY);
+const getResendClient = () => {
+  if (!process.env.RESEND_API_KEY) {
+    throw new Error("RESEND_API_KEY is not configured");
+  }
+  return new Resend(process.env.RESEND_API_KEY);
+};
 
 const FROM_ADDRESS = "NBA Predictor <onboarding@resend.dev>";
 
@@ -92,6 +97,7 @@ export const sendUnbidReminder = async (
 </body>
 </html>`;
 
+  const resend = getResendClient();
   return await resend.emails.send({
     from: FROM_ADDRESS,
     to,

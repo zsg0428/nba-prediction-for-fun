@@ -4,7 +4,7 @@ import Image from "next/image";
 import { Button } from "@/components/ui/button";
 import { formatInTimeZone } from "date-fns-tz";
 import { getTeamLogoUrl } from "@/constants/teams";
-import { Calendar, Clock, Trophy } from "lucide-react";
+import { Calendar, Clock, Lock, Trophy } from "lucide-react";
 
 import { Game } from "@/types/IGames";
 import { PredictionMap } from "@/types/IPredictions";
@@ -147,7 +147,10 @@ export const GameCard = ({ game, predictedTeam, onGuess, allOtherGameGuesses }: 
               >
                 <AvatarBadge avatar={guess.avatar} favoriteTeam={guess.favoriteTeam} size={14} />
                 <span className="font-medium">{guess.user}</span>
-                <span className="text-muted-foreground">{guess.predictedTeam}</span>
+                <span className="inline-flex items-center gap-1 text-muted-foreground">
+                  <Lock className="h-3 w-3" />
+                  Picked
+                </span>
               </span>
             ))}
           </div>

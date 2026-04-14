@@ -1,25 +1,27 @@
-import { Resend } from "resend";
+import nodemailer from "nodemailer";
 
-const getResendClient = () => {
-  if (!process.env.RESEND_API_KEY) {
-    throw new Error("RESEND_API_KEY is not configured");
+const getTransporter = () => {
+  const user = process.env.GMAIL_USER;
+  const pass = process.env.GMAIL_APP_PASSWORD;
+  if (!user || !pass) {
+    throw new Error("GMAIL_USER or GMAIL_APP_PASSWORD is not configured");
   }
-  return new Resend(process.env.RESEND_API_KEY);
+  return nodemailer.createTransport({
+    service: "gmail",
+    auth: { user, pass },
+  });
 };
 
-const FROM_ADDRESS = "NBA Predictor <onboarding@resend.dev>";
-
-interface UnbidGame {
+export interface UnbidGame {
   homeTeam: string;
   awayTeam: string;
   startTime: Date;
 }
 
-export const sendUnbidReminder = async (
-  to: string,
+export const buildUnbidReminderHtml = (
   userName: string,
   unbidGames: UnbidGame[],
-) => {
+): string => {
   const gameRows = unbidGames
     .map((g) => {
       const time = g.startTime.toLocaleTimeString("en-US", {
@@ -97,9 +99,18 @@ export const sendUnbidReminder = async (
 </body>
 </html>`;
 
-  const resend = getResendClient();
-  return await resend.emails.send({
-    from: FROM_ADDRESS,
+  return html;
+};
+
+export const sendUnbidReminder = async (
+  to: string,
+  userName: string,
+  unbidGames: UnbidGame[],
+) => {
+  const html = buildUnbidReminderHtml(userName, unbidGames);
+  const transporter = getTransporter();
+  return await transporter.sendMail({
+    from: `"NBA Predictor" <${process.env.GMAIL_USER}>`,
     to,
     subject: `You have ${unbidGames.length} game${unbidGames.length > 1 ? "s" : ""} to predict today!`,
     html,

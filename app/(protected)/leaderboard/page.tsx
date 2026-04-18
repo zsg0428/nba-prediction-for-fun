@@ -1,6 +1,6 @@
 import { getLeaderboard } from "@/actions/leaderboard";
 import { getCurrentUser } from "@/actions/user";
-import { BarChart3, Medal, Trophy } from "lucide-react";
+import { BarChart3, Check, Medal, Target, Trophy, X } from "lucide-react";
 import Image from "next/image";
 import AvatarBadge from "@/components/AvatarBadge";
 import TeamBadge from "@/components/TeamBadge";
@@ -80,14 +80,34 @@ export default async function LeaderboardPage() {
                   {user.favoriteTeam && (
                     <p className="mt-0.5 flex items-center gap-1 text-xs text-muted-foreground">
                       <TeamBadge teamName={user.favoriteTeam} size={14} />
-                      <span>{user.favoriteTeam} fan</span>
+                      <span className="truncate">{user.favoriteTeam} fan</span>
                     </p>
                   )}
+                  <div className="mt-1 flex items-center gap-2 text-xs tabular-nums">
+                    <span className="inline-flex items-center gap-0.5 font-medium text-emerald-600 dark:text-emerald-400">
+                      <Check className="h-3 w-3" strokeWidth={3} />
+                      {user.wins}
+                    </span>
+                    <span className="text-muted-foreground/40">·</span>
+                    <span className="inline-flex items-center gap-0.5 font-medium text-rose-600 dark:text-rose-400">
+                      <X className="h-3 w-3" strokeWidth={3} />
+                      {user.losses}
+                    </span>
+                    {user.winRate !== null && (
+                      <>
+                        <span className="text-muted-foreground/40">·</span>
+                        <span className="inline-flex items-center gap-0.5 font-medium text-muted-foreground">
+                          <Target className="h-3 w-3" />
+                          {Math.round(user.winRate * 100)}%
+                        </span>
+                      </>
+                    )}
+                  </div>
                 </div>
               </div>
 
               {/* Points */}
-              <div className="flex items-center gap-1.5">
+              <div className="flex shrink-0 items-center gap-1.5">
                 {isTop3 && <Trophy className="h-4 w-4 text-primary" />}
                 <span className="text-xl font-bold tabular-nums">
                   {user.totalPoints}
